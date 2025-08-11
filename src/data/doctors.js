@@ -1,0 +1,32 @@
+export const doctors = [
+    {
+        id: 'doc-1',
+        name: 'Dr. Suresh Rao',
+        specialization: 'Pediatric Ayurveda',
+        experience: 12,
+        mode: ['online', 'in-person'],
+        nextAvailable: '2025-08-15T10:00:00',
+        bio: 'Specialist in pediatric digestive disorders and growth support.',
+        rating: 4.7,
+    },
+    {
+        id: 'doc-2',
+        name: 'Dr. Meera Nair',
+        specialization: 'Digestive Health',
+        experience: 9,
+        mode: ['online'],
+        nextAvailable: '2025-08-13T14:30:00',
+        bio: 'Focus on chronic indigestion and lifestyle-based plans.',
+        rating: 4.9,
+    },
+    {
+        id: 'doc-3',
+        name: 'Dr. Rajiv Pillai',
+        specialization: 'Rheumatology (Ayurvedic)',
+        experience: 18,
+        mode: ['in-person'],
+        nextAvailable: '2025-08-18T09:00:00',
+        bio: 'Expert in joint health and chronic pain management.',
+        rating: 4.8,
+    },
+]

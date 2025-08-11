@@ -1,35 +1,31 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import MainLayout from '@/Layout/MainLayout'
+import { Routes, Route } from 'react-router-dom'
+import Landing from '@/pages/landing/Landing'
+import SignIn from '@/pages/auth/SignIn'
+import SignUp from '@/pages/auth/SignUp'
+import Discovery from '@/pages/home/DoctorDiscovery'
+import Booking from '@/pages/home/SlotBooking'
+import Dashboard from '@/pages/dashboard/AppointmentDashboard'
+import Reschedule from '@/pages/home/Reschedule'
+import DoctorLogin from '@/pages/home/DoctorLogin'
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+const App = () => {
+    return (
+        <>
+            <MainLayout>
+                <Routes>
+                    <Route path='/' element={<Landing />} />
+                    <Route path='/signin' element={<SignIn />} />
+                    <Route path='/signup' element={<SignUp />} />
+                    <Route path='/home' element={<Discovery />} />
+                    <Route path='/book/:id' element={<Booking />} />
+                    <Route path='/dashboard' element={<Dashboard />} />
+                    <Route path='/reschedule/:apptId' element={<Reschedule />} />
+                    <Route path='/doctor' element={<DoctorLogin />} />
+                </Routes>
+            </MainLayout>
+        </>
+    )
 }
 
 export default App
