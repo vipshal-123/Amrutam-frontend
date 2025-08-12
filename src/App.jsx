@@ -1,13 +1,16 @@
 import MainLayout from '@/Layout/MainLayout'
 import { Routes, Route } from 'react-router-dom'
-import Landing from '@/pages/landing/Landing'
-import SignIn from '@/pages/auth/SignIn'
-import SignUp from '@/pages/auth/SignUp'
-import Discovery from '@/pages/home/DoctorDiscovery'
-import Booking from '@/pages/home/SlotBooking'
-import Dashboard from '@/pages/dashboard/AppointmentDashboard'
-import Reschedule from '@/pages/home/Reschedule'
-import DoctorLogin from '@/pages/home/DoctorLogin'
+import Landing from './pages/landing/Landing'
+import SignIn from './pages/auth/SignIn'
+import SignUp from './pages/auth/SignUp'
+import Discovery from './pages/home/DoctorDiscovery'
+import Booking from './pages/home/SlotBooking'
+import Dashboard from './pages/dashboard/AppointmentDashboard'
+import Reschedule from './pages/home/Reschedule'
+import DoctorLogin from './pages/home/DoctorLogin'
+import CreateOrganization from './pages/organization/Organization'
+import OtpVerification from './pages/auth/OtpVerification'
+import OrgOtpVerify from './pages/organization/OrgOtpVerify'
 
 const App = () => {
     return (
@@ -22,6 +25,9 @@ const App = () => {
                     <Route path='/dashboard' element={<Dashboard />} />
                     <Route path='/reschedule/:apptId' element={<Reschedule />} />
                     <Route path='/doctor' element={<DoctorLogin />} />
+                    <Route path='/create-org' element={<CreateOrganization />} />
+                    <Route path='/otp-verification' element={<OtpVerification />} />
+                    <Route path='/create-org/verify-otp' element={<OrgOtpVerify />} />
                 </Routes>
             </MainLayout>
         </>
