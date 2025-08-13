@@ -11,6 +11,14 @@ import DoctorLogin from './pages/home/DoctorLogin'
 import CreateOrganization from './pages/organization/Organization'
 import OtpVerification from './pages/auth/OtpVerification'
 import OrgOtpVerify from './pages/organization/OrgOtpVerify'
+import DoctorsManagement from './pages/organization/DoctorsManagement'
+import DocCreatePassword from './pages/auth/DocCreatePassword'
+import DocAndOrgSigningPage from './pages/auth/DocAndOrgSigningPage'
+import OrgAdminOtpVerification from './pages/auth/OrgAdminOtpVerification'
+import CreatePassword from './pages/auth/CreatePassword'
+import { ROLES } from './constants/enums'
+import ProtectedRoute from './utils/ProtectedRoute'
+import OpenRoute from './utils/OpenRoute'
 
 const App = () => {
     return (
@@ -18,16 +26,34 @@ const App = () => {
             <MainLayout>
                 <Routes>
                     <Route path='/' element={<Landing />} />
-                    <Route path='/signin' element={<SignIn />} />
-                    <Route path='/signup' element={<SignUp />} />
-                    <Route path='/home' element={<Discovery />} />
-                    <Route path='/book/:id' element={<Booking />} />
-                    <Route path='/dashboard' element={<Dashboard />} />
-                    <Route path='/reschedule/:apptId' element={<Reschedule />} />
-                    <Route path='/doctor' element={<DoctorLogin />} />
+
+                    <Route element={<OpenRoute />}>
+                        <Route path='/signin' element={<SignIn />} />
+                        <Route path='/signup' element={<SignUp />} />
+                    </Route>
+
+                    <Route element={<ProtectedRoute allowedRoles={[ROLES.USER]} />}>
+                        <Route path='/home' element={<Discovery />} />
+                        <Route path='/book/:id' element={<Booking />} />
+                        <Route path='/dashboard' element={<Dashboard />} />
+                        <Route path='/reschedule/:apptId' element={<Reschedule />} />
+                    </Route>
+
+                    <Route element={<ProtectedRoute allowedRoles={[ROLES.DOCTOR]} />}>
+                        <Route path='/doctor' element={<DoctorLogin />} />
+                    </Route>
+
+                    <Route element={<ProtectedRoute allowedRoles={ROLES.ORG_ADMIN} />}>
+                        <Route path='/manage-doctors' element={<DoctorsManagement />} />
+                    </Route>
+
                     <Route path='/create-org' element={<CreateOrganization />} />
-                    <Route path='/otp-verification' element={<OtpVerification />} />
                     <Route path='/create-org/verify-otp' element={<OrgOtpVerify />} />
+                    <Route path='/doc-create-password' element={<DocCreatePassword />} />
+                    <Route path='/administrative-signin' element={<DocAndOrgSigningPage />} />
+                    <Route path='/admin-verify-otp' element={<OrgAdminOtpVerification />} />
+                    <Route path='/verify-otp' element={<OtpVerification />} />
+                    <Route path='/create-password' element={<CreatePassword />} />
                 </Routes>
             </MainLayout>
         </>

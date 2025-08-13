@@ -10,15 +10,20 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.8.2",
     "axios": "^1.11.0",
     "date-fns": "^4.1.0",
     "formik": "^2.4.6",
+    "install": "^0.13.0",
     "is-empty": "^1.2.0",
     "lucide-react": "^0.539.0",
+    "npm": "^11.5.2",
     "react": "^19.1.1",
     "react-big-calendar": "^1.19.4",
     "react-dom": "^19.1.1",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^7.8.0",
+    "redux-persist": "^6.0.0",
     "yup": "^1.7.0"
   },
   "devDependencies": {

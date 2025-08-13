@@ -1,7 +1,15 @@
-import AxiosService from 'axios'
+import axios from 'axios'
 import { getLocal } from '../utils/storage'
+import config from '@/config'
+import paramsEncoder from '@/utils/paramsEncoder'
 
-AxiosService.interceptors.request.use(
+const UserService = axios.create({
+    baseURL: config.API_URL,
+    withCredentials: true,
+    paramsSerializer: paramsEncoder,
+})
+
+UserService.interceptors.request.use(
     (config) => {
         const token = getLocal('access_token')
         if (token && !config.url.endsWith('refresh-token')) {
@@ -13,9 +21,7 @@ AxiosService.interceptors.request.use(
         config.headers.TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone
         return config
     },
-    (error) => {
-        throw error
-    },
+    (error) => Promise.reject(error),
 )
 
-export default AxiosService
+export default UserService

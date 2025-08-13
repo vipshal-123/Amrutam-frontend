@@ -1,27 +1,28 @@
 import OtpInput from '@/components/OtpInput'
-import { createOrgVerifyOtp, orgResendOtp } from '@/services/auth/organization.service'
+import { fetchUserData } from '@/redux/slice/authSlice'
+import { orgAdminSigninVerifyOtp, orgResendOtp } from '@/services/auth/organization.service'
 import { getLocal, removeLocal, setLocal } from '@/utils/storage'
 import React from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
-const OrgOtpVerify = () => {
+const OrgAdminOtpVerification = () => {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+
     const handleVerifyOtp = async (otp) => {
         console.log('Entered OTP:', otp)
         try {
-            const localData = JSON.parse(getLocal('orgData')) || {}
             const localToken = getLocal('token')
 
             const payload = {
-                ...localData,
-                token: localToken,
                 otp: otp,
+                token: localToken,
             }
 
-            const response = await createOrgVerifyOtp(payload)
-
+            const response = await orgAdminSigninVerifyOtp(payload)
             if (response.success) {
-                removeLocal('orgData')
+                dispatch(fetchUserData())
                 removeLocal('token')
                 setLocal('access_token', response?.accessToken || '')
                 navigate('/manage-doctors')
@@ -57,4 +58,4 @@ const OrgOtpVerify = () => {
     )
 }
 
-export default OrgOtpVerify
+export default OrgAdminOtpVerification

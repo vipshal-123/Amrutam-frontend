@@ -1,12 +1,5 @@
 import axios from './axiosService'
-import config from '@/config'
-import paramsEncoder from '@/utils/paramsEncoder'
 import isEmpty from 'is-empty'
-
-axios.defaults.baseURL = config.API_URL
-axios.defaults.withCredentials = true
-axios.defaults.paramsSerializer = paramsEncoder
-axios.defaults.headers.common['TIMEZONE'] = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 export const handleResponse = (response, type) => {
     try {

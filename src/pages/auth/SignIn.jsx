@@ -1,22 +1,58 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useFormik } from 'formik'
+import * as Yup from 'yup'
+import { signin } from '@/services/auth/user.service'
+import { setLocal } from '@/utils/storage'
 
 const SignIn = () => {
+    const navigate = useNavigate()
+
+    const handleLogin = async (payload) => {
+        try {
+            const response = await signin(payload)
+
+            if (response.success) {
+                setLocal('access_token', response.accessToken)
+                navigate('/home')
+            }
+        } catch (error) {
+            console.error('error: ', error)
+        }
+    }
+
+    const formik = useFormik({
+        initialValues: {
+            email: '',
+            password: '',
+        },
+        validationSchema: Yup.object({
+            email: Yup.string().email('Invalid email address').required('Email is required'),
+            password: Yup.string().required('Password is required'),
+        }),
+        onSubmit: handleLogin,
+    })
+
     return (
         <div className='flex justify-center items-center min-h-screen bg-gray-50 px-4 py-8'>
             <div className='bg-white shadow-lg rounded-lg p-6 sm:p-8 w-full max-w-md'>
                 <h2 className='text-2xl sm:text-3xl font-bold mb-6 text-center text-gray-800'>Sign In</h2>
 
-                <form className='space-y-4'>
+                <form className='space-y-4' onSubmit={formik.handleSubmit}>
                     <div>
                         <label htmlFor='email' className='sr-only'>
                             Email
                         </label>
                         <input
                             id='email'
+                            name='email'
                             type='email'
                             placeholder='Email'
-                            className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition'
+                            className={`w-full p-3 border ${
+                                formik.touched.email && formik.errors.email ? 'border-red-500' : 'border-gray-300'
+                            } rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition`}
+                            {...formik.getFieldProps('email')}
                         />
+                        {formik.touched.email && formik.errors.email && <p className='text-sm text-red-500 mt-1'>{formik.errors.email}</p>}
                     </div>
                     <div>
                         <label htmlFor='password' className='sr-only'>
@@ -24,10 +60,15 @@ const SignIn = () => {
                         </label>
                         <input
                             id='password'
+                            name='password'
                             type='password'
                             placeholder='Password'
-                            className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition'
+                            className={`w-full p-3 border ${
+                                formik.touched.password && formik.errors.password ? 'border-red-500' : 'border-gray-300'
+                            } rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition`}
+                            {...formik.getFieldProps('password')}
                         />
+                        {formik.touched.password && formik.errors.password && <p className='text-sm text-red-500 mt-1'>{formik.errors.password}</p>}
                     </div>
                     <button
                         type='submit'
@@ -53,4 +94,5 @@ const SignIn = () => {
         </div>
     )
 }
+
 export default SignIn
