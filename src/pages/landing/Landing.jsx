@@ -1,7 +1,11 @@
+import { ROLES } from '@/constants/enums'
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 const Landing = () => {
     const navigate = useNavigate()
+    const userData = useSelector((data) => data?.auth || {})
+
     return (
         <div>
             <section className='bg-green-50 py-16 px-6 text-center'>
@@ -10,13 +14,32 @@ const Landing = () => {
                     Discover expert doctors, book consultations, and take the first step towards holistic health.
                 </p>
                 <div className='flex items-center justify-center gap-2'>
-                    <button onClick={() => navigate('/home')} className='bg-green-700 text-white px-6 py-3 rounded-lg hover:bg-green-800'>
-                        Find a Doctor
-                    </button>
+                    {userData?.role === ROLES.USER && (
+                        <button onClick={() => navigate('/home')} className='bg-green-700 text-white px-6 py-3 rounded-lg hover:bg-green-800'>
+                            Find a Doctor
+                        </button>
+                    )}
 
-                    <button onClick={() => navigate('/create-org')} className='bg-green-700 text-white px-6 py-3 rounded-lg hover:bg-green-800'>
-                        Create Organization
-                    </button>
+                    {userData?.role === ROLES.ORG_ADMIN && (
+                        <button
+                            onClick={() => navigate('/manage-doctors')}
+                            className='bg-green-700 text-white px-6 py-3 rounded-lg hover:bg-green-800'
+                        >
+                            Manage Doctor
+                        </button>
+                    )}
+
+                    {userData?.role === ROLES.DOCTOR && (
+                        <button onClick={() => navigate('/doctor')} className='bg-green-700 text-white px-6 py-3 rounded-lg hover:bg-green-800'>
+                            Doctor Dashboard
+                        </button>
+                    )}
+
+                    {!userData?.isAuth && (
+                        <button onClick={() => navigate('/create-org')} className='bg-green-700 text-white px-6 py-3 rounded-lg hover:bg-green-800'>
+                            Create Organization
+                        </button>
+                    )}
                 </div>
             </section>
 

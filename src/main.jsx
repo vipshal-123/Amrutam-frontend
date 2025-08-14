@@ -6,7 +6,6 @@ import { Provider } from 'react-redux'
 import store, { persistor } from './redux/store.js'
 import UserProvider from './utils/UserProvider.jsx'
 import './styles/globals.css'
-import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { PersistGate } from 'redux-persist/integration/react'
 
 createRoot(document.getElementById('root')).render(

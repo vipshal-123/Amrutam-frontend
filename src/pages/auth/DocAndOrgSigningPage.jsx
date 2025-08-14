@@ -4,10 +4,13 @@ import { doctorSignin } from '@/services/auth/doctor.service'
 import { useNavigate } from 'react-router-dom'
 import { setLocal } from '@/utils/storage'
 import { orgAdminSigninSendOtp } from '@/services/auth/organization.service'
+import { fetchUserData } from '@/redux/slice/authSlice'
+import { useDispatch } from 'react-redux'
 
 const DocAndOrgSigningPage = () => {
     const [activeTab, setActiveTab] = useState('doctor')
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const handleDocSignin = async (payload) => {
         console.log('payload: ', payload)
@@ -15,8 +18,9 @@ const DocAndOrgSigningPage = () => {
             const response = await doctorSignin(payload)
 
             if (response?.success) {
-                navigate('/doctor')
                 setLocal('access_token', response?.accessToken)
+                dispatch(fetchUserData())
+                navigate('/doctor')
             }
         } catch (error) {
             console.error('error: ', error)

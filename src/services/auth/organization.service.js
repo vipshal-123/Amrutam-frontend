@@ -83,3 +83,31 @@ export const orgAdminSigninVerifyOtp = async (data) => {
         return handleResponse(error, 'error')
     }
 }
+
+export const addDoctor = async (data) => {
+    try {
+        const response = await axios({
+            url: '/auth/organization/add-doctor',
+            method: 'POST',
+            data,
+        })
+
+        return handleResponse(response, 'success')
+    } catch (error) {
+        return handleResponse(error, 'error')
+    }
+}
+
+export const addDoctorResendMail = async (data) => {
+    try {
+        const response = await axios({
+            url: '/auth/organization/resend-doc-mail',
+            method: 'POST',
+            data,
+        })
+
+        return handleResponse(response, 'success')
+    } catch (error) {
+        return handleResponse(error, 'error')
+    }
+}

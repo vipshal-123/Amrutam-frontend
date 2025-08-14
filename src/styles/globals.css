@@ -7,3 +7,7 @@ body { @apply bg-gray-50 text-gray-800; }
 
 /* small helpers */
 .container { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+
+#scrollable {
+  scroll-behavior: smooth;
+}

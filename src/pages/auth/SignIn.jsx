@@ -3,15 +3,19 @@ import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { signin } from '@/services/auth/user.service'
 import { setLocal } from '@/utils/storage'
+import { fetchUserData } from '@/redux/slice/authSlice'
+import { useDispatch } from 'react-redux'
 
 const SignIn = () => {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const handleLogin = async (payload) => {
         try {
             const response = await signin(payload)
 
             if (response.success) {
+                dispatch(fetchUserData())
                 setLocal('access_token', response.accessToken)
                 navigate('/home')
             }

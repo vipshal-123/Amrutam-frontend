@@ -4,6 +4,7 @@ import { User, Menu, X, LogOut } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { removeLocal } from '@/utils/storage'
 import { fetchUserData } from '@/redux/slice/authSlice'
+import { ROLES } from '@/constants/enums'
 
 const MainLayout = ({ children }) => {
     const navigate = useNavigate()
@@ -25,12 +26,17 @@ const MainLayout = ({ children }) => {
                         Amrutam
                     </Link>
                     <nav className='hidden md:flex gap-4 items-center'>
-                        <Link to='/home' className='text-sm hover:text-emerald-700'>
-                            Doctors
-                        </Link>
-                        <Link to='/dashboard' className='text-sm hover:text-emerald-700'>
-                            Appointments
-                        </Link>
+                        {userData?.role === ROLES.USER && (
+                            <>
+                                <Link to='/home' className='text-sm hover:text-emerald-700'>
+                                    Doctors
+                                </Link>
+                                <Link to='/dashboard' className='text-sm hover:text-emerald-700'>
+                                    Appointments
+                                </Link>
+                            </>
+                        )}
+
                         {!userData?.isAuth && (
                             <>
                                 <Link to='/administrative-signin' className='text-sm hover:text-emerald-700'>
@@ -60,12 +66,17 @@ const MainLayout = ({ children }) => {
                 </div>
                 {menuOpen && (
                     <div className='md:hidden px-4 pb-4 space-y-3 border-t bg-white'>
-                        <Link to='/' className='block text-sm hover:text-emerald-700' onClick={() => setMenuOpen(false)}>
-                            Doctors
-                        </Link>
-                        <Link to='/dashboard' className='block text-sm hover:text-emerald-700' onClick={() => setMenuOpen(false)}>
-                            Appointments
-                        </Link>
+                        {userData?.role === ROLES.USER && (
+                            <>
+                                <Link to='/' className='block text-sm hover:text-emerald-700' onClick={() => setMenuOpen(false)}>
+                                    Doctors
+                                </Link>
+                                <Link to='/dashboard' className='block text-sm hover:text-emerald-700' onClick={() => setMenuOpen(false)}>
+                                    Appointments
+                                </Link>
+                            </>
+                        )}
+
                         {!userData?.isAuth && (
                             <>
                                 <Link to='/administrative-signin' className='block text-sm hover:text-emerald-700' onClick={() => setMenuOpen(false)}>

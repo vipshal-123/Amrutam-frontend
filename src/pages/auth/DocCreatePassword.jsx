@@ -19,7 +19,7 @@ const DocCreatePassword = () => {
             const response = await docCreatePassword(payload)
 
             if (response.success) {
-                navigate('/home')
+                navigate('/administrative-signin')
             }
         } catch (error) {
             console.error('error: ', error)

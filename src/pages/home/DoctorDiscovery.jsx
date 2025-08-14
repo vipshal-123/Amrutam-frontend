@@ -1,17 +1,20 @@
 import React, { useState } from 'react'
 import DoctorCard from '@/components/DoctorCard'
-import { doctors } from '@/data/doctors'
+import useFetchApi from '@/Hooks/useFetchApi'
+import { doctorList } from '@/services/v1/user.service'
+import InfiniteScroll from 'react-infinite-scroll-component'
 
 const Discovery = () => {
     const [mode, setMode] = useState('any')
     const [special, setSpecial] = useState('all')
 
     const modes = ['any', 'online', 'in-person']
-    const specializations = Array.from(new Set(doctors.map((d) => d.specialization)))
+    const { cursor, fetchData, hasMore, items, loading } = useFetchApi(doctorList, { requiresId: false })
+    const specializations = Array.from(new Set(items.map((d) => d?.specialization)))
 
-    const filtered = doctors.filter((d) => {
-        if (mode !== 'any' && !d.mode.includes(mode)) return false
-        if (special !== 'all' && d.specialization !== special) return false
+    const filtered = items.filter((d) => {
+        if (mode !== 'any' && !d?.mode.includes(mode)) return false
+        if (special !== 'all' && d?.specialization !== special) return false
         return true
     })
 
@@ -46,13 +49,27 @@ const Discovery = () => {
                     ))}
                 </div>
             </div>
-
-            <div className='grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'>
-                {filtered.length > 0 ? (
-                    filtered.map((d) => <DoctorCard key={d.id} doctor={d} />)
-                ) : (
-                    <p className='text-center text-gray-500 col-span-full'>No doctors match the current filters.</p>
-                )}
+            <div
+                id='scrollable'
+                className='tw-h-[400px] tw-overflow-y-auto tw-p-2 tw-border tw-border-gray-200 tw-rounded-lg tw-relative'
+                style={{ maxHeight: '400px', overflowY: 'auto' }}
+            >
+                <InfiniteScroll
+                    dataLength={items.length}
+                    next={() => fetchData(cursor)}
+                    hasMore={hasMore}
+                    loader={loading && <div className='tw-p-2 tw-text-center tw-text-gray-500'>Loading...</div>}
+                    scrollableTarget='scrollable'
+                    scrollThreshold='90%'
+                >
+                    <div className='grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'>
+                        {filtered.length > 0 ? (
+                            filtered.map((d, index) => <DoctorCard key={index} doctor={d} handleResendMail={null} />)
+                        ) : (
+                            <p className='text-center text-gray-500 col-span-full'>No doctors match the current filters.</p>
+                        )}
+                    </div>
+                </InfiniteScroll>
             </div>
         </div>
     )
