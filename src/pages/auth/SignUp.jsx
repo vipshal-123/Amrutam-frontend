@@ -113,7 +113,7 @@ const SignUp = () => {
                         Sign Up
                     </button>
 
-                    <div style={{ width: '100%' }}>
+                    <div className='w-full flex items-center justify-center'>
                         <GoogleLogin
                             onSuccess={(credentialResponse) => handleContinueWithGoogle(credentialResponse?.credential)}
                             onError={() => {
