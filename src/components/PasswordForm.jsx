@@ -2,7 +2,7 @@ import React from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 
-const PasswordForm = ({ title = 'Create Password', onSubmit }) => {
+const PasswordForm = ({ title = 'Create Password', onSubmit, loading }) => {
     const formik = useFormik({
         initialValues: {
             password: '',
@@ -66,7 +66,7 @@ const PasswordForm = ({ title = 'Create Password', onSubmit }) => {
                 </div>
 
                 <button type='submit' className='w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-4 rounded-lg font-medium transition'>
-                    {title.includes('Update') ? 'Update Password' : 'Set Password'}
+                    {loading ? 'Loading...' : 'Set Password'}
                 </button>
             </form>
         </div>

@@ -11,11 +11,13 @@ const Reschedule = () => {
     const { apptId, docId } = useParams()
     const [newSlot, setNewSlot] = useState(null)
     const [rescheduled, setRescheduled] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const memoId = useMemo(() => ({ id: docId }), [docId])
     const { items, setItems } = useFetchApi(singleDoctor, { requiresId: true, params: memoId })
 
     const handleConfirmReschedule = async () => {
+        setLoading(true)
         if (newSlot) {
             setRescheduled(true)
         }
@@ -29,6 +31,7 @@ const Reschedule = () => {
             const response = await rescheduleBooking(payload)
 
             if (response.success) {
+                setLoading(false)
                 setItems((prev) => {
                     if (!prev || !prev.docAvailability) return prev
 
@@ -62,9 +65,11 @@ const Reschedule = () => {
 
                 dispatch(openToast({ message: response.message, type: 'success' }))
             } else {
+                setLoading(false)
                 dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
+            setLoading(false)
             console.error('error: ', error)
             dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
@@ -142,9 +147,14 @@ const Reschedule = () => {
                                         onClick={handleConfirmReschedule}
                                         className='w-full sm:w-auto px-4 py-2 bg-emerald-600 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-opacity'
                                     >
-                                        Confirm Reschedule
+                                        {loading ? 'Loading...' : 'Confirm Reschedule'}
                                     </button>
-                                    <button className='w-full sm:w-auto px-3 py-2 border rounded-md text-sm hover:bg-gray-100'>Cancel</button>
+                                    <button
+                                        onClick={() => setNewSlot(null)}
+                                        className='w-full sm:w-auto px-3 py-2 border rounded-md text-sm hover:bg-gray-100'
+                                    >
+                                        Cancel
+                                    </button>
                                 </div>
                             </div>
                         </>

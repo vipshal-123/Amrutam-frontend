@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import ViewProfileModal from './ViewProfileModal'
 
-const DoctorCard = ({ doctor, handleResendMail }) => {
+const DoctorCard = ({ doctor, handleResendMail, loading1 }) => {
     const userData = useSelector((data) => data?.auth || {})
     const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -37,7 +37,7 @@ const DoctorCard = ({ doctor, handleResendMail }) => {
                             onClick={() => handleResendMail({ userId: doctor?._id, email: doctor?.email })}
                             className='text-sm px-1 py-1 border rounded'
                         >
-                            Resend mail
+                            {loading1 ? 'Loading...' : 'Resend mail'}
                         </button>
                     )}
                 </div>

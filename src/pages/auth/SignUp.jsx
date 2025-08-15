@@ -7,23 +7,29 @@ import { useDispatch } from 'react-redux'
 import { openToast } from '@/redux/slice/toastSlice'
 import { fetchUserData } from '@/redux/slice/authSlice'
 import { GoogleLogin } from '@react-oauth/google'
+import { useState } from 'react'
 
 const SignUp = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const [loading, setLoading] = useState(false)
 
     const handleSubmit = async (payload) => {
         try {
+            setLoading(true)
             const response = await signup(payload)
 
             if (response.success) {
+                setLoading(false)
                 setLocal('token', response.token)
                 navigate('/verify-otp')
                 dispatch(openToast({ message: response.message, type: 'success' }))
             } else {
+                setLoading(false)
                 dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
+            setLoading(false)
             console.error('error: ', error)
             dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
@@ -110,7 +116,7 @@ const SignUp = () => {
                         type='submit'
                         className='w-full bg-emerald-600 text-white p-3 rounded-lg font-semibold hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors'
                     >
-                        Sign Up
+                        {loading ? 'Loading...' : 'Sign Up'}
                     </button>
 
                     <div className='w-full flex items-center justify-center'>

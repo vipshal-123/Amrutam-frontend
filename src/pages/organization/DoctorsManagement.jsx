@@ -13,6 +13,7 @@ import { useDispatch } from 'react-redux'
 const DoctorsManagement = () => {
     const dispatch = useDispatch()
     const [showModal, setShowModal] = useState(false)
+    const [loading1, setLoading1] = useState(false)
     const { cursor, fetchData, hasMore, items, loading, setItems } = useFetchApi(doctorList, { requiresId: false })
     const data = useFetchApi(doctorSpecialization, { requiresId: false })
 
@@ -45,18 +46,22 @@ const DoctorsManagement = () => {
 
     const handleAddDoctor = async (values) => {
         console.log('values: ', values)
+        setLoading1(true)
         try {
             const response = await addDoctor(values)
 
             if (response.success) {
+                setLoading1(false)
                 const newDoctor = { _id: response?._id, specialization: response?.specialization, status: 'pending', ...values }
                 setItems((prev) => [...prev, newDoctor])
                 setShowModal(false)
                 dispatch(openToast({ message: response.message, type: 'success' }))
             } else {
+                setLoading1(false)
                 dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
+            setLoading1(false)
             console.error('error: ', error)
             dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
@@ -64,14 +69,18 @@ const DoctorsManagement = () => {
 
     const handleResendMail = async (payload) => {
         try {
+            setLoading1(true)
             const response = await addDoctorResendMail(payload)
 
             if (response.success) {
+                setLoading1(false)
                 dispatch(openToast({ message: response.message, type: 'success' }))
             } else {
+                setLoading1(false)
                 dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
+            setLoading1(false)
             console.error('error: ', error)
             dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
@@ -101,7 +110,7 @@ const DoctorsManagement = () => {
                     {!isEmpty(items) ? (
                         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
                             {items.map((doc, index) => (
-                                <DoctorCard key={index} doctor={doc} handleResendMail={handleResendMail} />
+                                <DoctorCard key={index} doctor={doc} handleResendMail={handleResendMail} loading1={loading1} />
                             ))}
                         </div>
                     ) : (
@@ -119,7 +128,7 @@ const DoctorsManagement = () => {
                             </button>
                         </div>
                         <div className='p-6 overflow-y-auto'>
-                            <DynamicForm fields={doctorFields} onSubmit={handleAddDoctor} infiniteData={data} />
+                            <DynamicForm fields={doctorFields} onSubmit={handleAddDoctor} infiniteData={data} loading1={loading1} />
                         </div>
                     </div>
                 </div>

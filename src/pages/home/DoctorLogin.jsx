@@ -18,7 +18,7 @@ const DoctorLogin = () => {
     const [timeSlots, setTimeSlots] = useState([{ start: '09:00', end: '17:00', patientCount: 10 }])
     const { items } = useFetchApi(getDoctorAvailability, { requiresId: false })
     const formattedEvents = transformApiDataToEvents(items)
-    console.log('formattedEvents: ', formattedEvents)
+    const [loading, setLoading] = useState(false)
     const isEventAdded = useRef(true)
 
     if (isEventAdded?.current && !isEmpty(formattedEvents)) {
@@ -72,6 +72,7 @@ const DoctorLogin = () => {
     }
 
     const handleSave = async () => {
+        setLoading(true)
         if (editingEvent) {
             const eventDay = formatDate(editingEvent.start)
             const otherEvents = events.filter((e) => formatDate(e.start) !== eventDay)
@@ -103,13 +104,16 @@ const DoctorLogin = () => {
                 const response = await updateDoctorAvailability(payload)
 
                 if (response.success) {
+                    setLoading(false)
                     setEvents([...otherEvents, ...newEventsForDay])
                     console.log(response.message)
                     dispatch(openToast({ message: response.message, type: 'success' }))
                 } else {
+                    setLoading(false)
                     dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
                 }
             } catch (error) {
+                setLoading(false)
                 console.error('error: ', error)
                 dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
             }
@@ -144,10 +148,12 @@ const DoctorLogin = () => {
                     const response = await doctorAvailability(payload)
 
                     if (response.success) {
+                        setLoading(false)
                         setEvents((prevEvents) => [...prevEvents, ...newEvents])
                         console.log(response.message)
                         dispatch(openToast({ message: response.message, type: 'success' }))
                     } else {
+                        setLoading(false)
                         dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
                     }
                 }
@@ -174,6 +180,8 @@ const DoctorLogin = () => {
         setEditingEvent(null)
         setTimeSlots([{ start: '09:00', end: '17:00', patientCount: 10 }])
     }
+
+    const buttonText = editingEvent ? 'Update' : 'Save'
 
     return (
         <div className='py-8 px-4 sm:px-6 lg:px-8 bg-gray-50 min-h-screen'>
@@ -271,7 +279,7 @@ const DoctorLogin = () => {
                                 Cancel
                             </button>
                             <button onClick={handleSave} className='w-full sm:w-auto px-4 py-2 bg-emerald-600 text-white rounded-md font-semibold'>
-                                {editingEvent ? 'Update' : 'Save'}
+                                {loading ? 'Loading...' : buttonText}
                             </button>
                         </div>
                     </div>
