@@ -8,6 +8,8 @@ import UserProvider from './utils/UserProvider.jsx'
 import './styles/globals.css'
 import { PersistGate } from 'redux-persist/integration/react'
 import Toast from './components/Toast.jsx'
+import { GoogleOAuthProvider } from '@react-oauth/google'
+import config from './config/index.js'
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
@@ -16,7 +18,9 @@ createRoot(document.getElementById('root')).render(
                 <PersistGate loading={null} persistor={persistor}>
                     <Toast />
                     <UserProvider>
-                        <App />
+                        <GoogleOAuthProvider clientId={config.GOOGLE_CLIENT_ID}>
+                            <App />
+                        </GoogleOAuthProvider>
                     </UserProvider>
                 </PersistGate>
             </Provider>
