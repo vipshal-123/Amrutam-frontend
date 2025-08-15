@@ -11,7 +11,7 @@ import Toast from './components/Toast.jsx'
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
-        <BrowserRouter>
+        <BrowserRouter basename='/Amrutam-frontend'>
             <Provider store={store}>
                 <PersistGate loading={null} persistor={persistor}>
                     <Toast />

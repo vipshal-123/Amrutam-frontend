@@ -21,7 +21,6 @@ import OpenRoute from './utils/OpenRoute'
 import SlotBooking from './pages/home/SlotBooking'
 
 const App = () => {
-    const common = '/Amrutam-frontend'
     return (
         <>
             <MainLayout>
