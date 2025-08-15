@@ -1,10 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
-import { signup } from '@/services/auth/user.service'
+import { googleAuthenticate, signup } from '@/services/auth/user.service'
 import { setLocal } from '@/utils/storage'
 import { useDispatch } from 'react-redux'
 import { openToast } from '@/redux/slice/toastSlice'
+import { fetchUserData } from '@/redux/slice/authSlice'
+import { useGoogleLogin } from '@react-oauth/google'
 
 const SignUp = () => {
     const navigate = useNavigate()
@@ -27,6 +29,31 @@ const SignUp = () => {
         }
     }
 
+    const handleContinueWithGoogle = async (token) => {
+        try {
+            const payload = {
+                token: token,
+            }
+
+            const response = await googleAuthenticate(payload)
+            if (response?.success) {
+                if (response?.mode === 'CREATE_PASSWORD') {
+                    navigate('/create-password')
+                } else {
+                    dispatch(fetchUserData())
+                    setLocal('access_token', response.accessToken)
+                    navigate('/home')
+                }
+                dispatch(openToast({ message: response.message, type: 'success' }))
+            } else {
+                dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
+            }
+        } catch (error) {
+            console.error('error: ', error)
+            dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
+        }
+    }
+
     const formik = useFormik({
         initialValues: {
             name: '',
@@ -37,6 +64,11 @@ const SignUp = () => {
             email: Yup.string().email('Invalid email address').required('Email is required'),
         }),
         onSubmit: handleSubmit,
+    })
+
+    const login = useGoogleLogin({
+        onSuccess: (credentialResponse) => handleContinueWithGoogle(credentialResponse?.credential),
+        onError: () => console.log('Login Failed'),
     })
 
     return (
@@ -87,6 +119,7 @@ const SignUp = () => {
                     </button>
 
                     <button
+                        onClick={() => login()}
                         type='button'
                         className='w-full flex items-center justify-center gap-3 border border-gray-300 p-3 rounded-lg hover:bg-gray-50 transition-colors'
                     >
