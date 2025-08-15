@@ -1,6 +1,6 @@
 const config = {
-    // GOOGLE_OAUTH_ID: '457448460143-g8eo3o4i8ttkprcb9ea2rlptq36hc8bk.apps.googleusercontent.com',
-    API_URL: 'http://localhost:2048/api',
+    GOOGLE_CLIENT_ID: '572280693844-fcdbfovfa8ibvuuo2ja5352f6dah8oi2.apps.googleusercontent.com',
+    API_URL: 'https://amrutam-backend-2s6q.onrender.com/api',
 }
 
 export default config

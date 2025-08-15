@@ -6,15 +6,27 @@ import { doctorList } from '@/services/v1/organization.service'
 import isEmpty from 'is-empty'
 import { addDoctor, addDoctorResendMail } from '@/services/auth/organization.service'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import { doctorSpecialization } from '@/services/v1/user.service'
+import { openToast } from '@/redux/slice/toastSlice'
+import { useDispatch } from 'react-redux'
 
 const DoctorsManagement = () => {
+    const dispatch = useDispatch()
     const [showModal, setShowModal] = useState(false)
     const { cursor, fetchData, hasMore, items, loading, setItems } = useFetchApi(doctorList, { requiresId: false })
+    const data = useFetchApi(doctorSpecialization, { requiresId: false })
 
     const doctorFields = [
         { name: 'email', label: 'E-mail', type: 'text', required: true },
         { name: 'name', label: 'Full Name', type: 'text', required: true },
-        { name: 'specialization', label: 'Specialization', type: 'text', required: true },
+        {
+            name: 'specialization',
+            label: 'Specialization',
+            as: 'infinite_select',
+            multiple: true,
+            initialValue: [],
+            options: data.items.map((data) => ({ value: data._id, label: data?.title })),
+        },
         { name: 'experience', label: 'Experience (Years)', type: 'number', required: true },
         {
             name: 'mode',
@@ -37,12 +49,16 @@ const DoctorsManagement = () => {
             const response = await addDoctor(values)
 
             if (response.success) {
-                const newDoctor = { _id: response?._id, ...values }
+                const newDoctor = { _id: response?._id, specialization: response?.specialization, status: 'pending', ...values }
                 setItems((prev) => [...prev, newDoctor])
                 setShowModal(false)
+                dispatch(openToast({ message: response.message, type: 'success' }))
+            } else {
+                dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
             console.error('error: ', error)
+            dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
     }
 
@@ -51,10 +67,13 @@ const DoctorsManagement = () => {
             const response = await addDoctorResendMail(payload)
 
             if (response.success) {
-                console.log(response.message)
+                dispatch(openToast({ message: response.message, type: 'success' }))
+            } else {
+                dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
             console.error('error: ', error)
+            dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
     }
 
@@ -100,7 +119,7 @@ const DoctorsManagement = () => {
                             </button>
                         </div>
                         <div className='p-6 overflow-y-auto'>
-                            <DynamicForm fields={doctorFields} onSubmit={handleAddDoctor} />
+                            <DynamicForm fields={doctorFields} onSubmit={handleAddDoctor} infiniteData={data} />
                         </div>
                     </div>
                 </div>

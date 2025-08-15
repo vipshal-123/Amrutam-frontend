@@ -1,11 +1,15 @@
 import OtpInput from '@/components/OtpInput'
+import { openToast } from '@/redux/slice/toastSlice'
 import { createOrgVerifyOtp, orgResendOtp } from '@/services/auth/organization.service'
 import { getLocal, removeLocal, setLocal } from '@/utils/storage'
 import React from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 const OrgOtpVerify = () => {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+
     const handleVerifyOtp = async (otp) => {
         console.log('Entered OTP:', otp)
         try {
@@ -25,9 +29,13 @@ const OrgOtpVerify = () => {
                 removeLocal('token')
                 setLocal('access_token', response?.accessToken || '')
                 navigate('/manage-doctors')
+                dispatch(openToast({ message: response.message, type: 'success' }))
+            } else {
+                dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
             console.error('error: ', error)
+            dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
     }
 
@@ -43,10 +51,13 @@ const OrgOtpVerify = () => {
             const response = await orgResendOtp(payload)
 
             if (response.success) {
-                console.log(response.message)
+                dispatch(openToast({ message: response.message, type: 'success' }))
+            } else {
+                dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
             console.error('error: ', error)
+            dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
     }
 

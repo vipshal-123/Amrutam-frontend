@@ -1,15 +1,21 @@
 import React, { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import useFetchApi from '@/Hooks/useFetchApi'
-import { bookingSendOtp, bookingVerify, singleDoctor } from '@/services/v1/user.service'
+import { bookingReleaseLock, bookingSendOtp, bookingVerify, singleDoctor } from '@/services/v1/user.service'
 import isEmpty from 'is-empty'
 import { getLocal, removeLocal, setLocal } from '@/utils/storage'
+import moment from 'moment'
+import Countdown from 'react-countdown'
+import { useDispatch, useSelector } from 'react-redux'
+import { openToast } from '@/redux/slice/toastSlice'
 
 const SlotBooking = () => {
+    const userData = useSelector((data) => data?.auth)
+    const dispatch = useDispatch()
     const { id } = useParams()
     const memoId = useMemo(() => ({ id: id }), [id])
+    const { items, setItems } = useFetchApi(singleDoctor, { requiresId: true, params: memoId })
 
-    const { items } = useFetchApi(singleDoctor, { requiresId: true, params: memoId })
     const doc = items
     const [locked, setLocked] = useState(null)
     const [selected, setSelected] = useState(null)
@@ -19,22 +25,39 @@ const SlotBooking = () => {
 
     const handleLockSendOtp = async () => {
         try {
-            setOtpOpen(true)
-            console.log('selected: ', selected)
-
             const payload = {
-                email: doc?.email,
+                email: userData?.email,
                 availabilityId: selected?._id,
             }
 
             const response = await bookingSendOtp(payload)
 
             if (response.success) {
+                setOtpOpen(true)
                 setLocal('token', response.token)
                 console.log(response.message)
+                setItems((prev) => {
+                    if (!prev || !prev.docAvailability) return prev
+
+                    return {
+                        ...prev,
+                        docAvailability: prev.docAvailability.map((item) =>
+                            item._id.toString() === response?._id?.toString()
+                                ? {
+                                      ...item,
+                                      lockedAt: moment().toISOString(),
+                                  }
+                                : item,
+                        ),
+                    }
+                })
+                dispatch(openToast({ message: response.message, type: 'success' }))
+            } else {
+                dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
             console.error('error: ', error)
+            dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
     }
 
@@ -54,15 +77,73 @@ const SlotBooking = () => {
                 removeLocal('token')
                 setBookingConfirmed(true)
                 setOtpOpen(false)
+                setItems((prev) => {
+                    if (!prev || !prev.docAvailability) return prev
+
+                    return {
+                        ...prev,
+                        docAvailability: prev.docAvailability.map((item) =>
+                            item._id.toString() === selected?._id?.toString()
+                                ? {
+                                      ...item,
+                                      lockedAt: null,
+                                      isLocked: true,
+                                  }
+                                : item,
+                        ),
+                    }
+                })
+                dispatch(openToast({ message: response.message, type: 'success' }))
+            } else {
+                dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
             console.error('error: ', error)
+            dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
     }
 
     const handleLock = (items) => {
         setLocked(items?._id)
         setSelected(items)
+    }
+
+    const handleReleaseLock = async () => {
+        try {
+            const localToken = getLocal('token')
+            const payload = {
+                token: localToken,
+                availabilityId: selected?._id,
+            }
+
+            const response = await bookingReleaseLock(payload)
+
+            if (response.success) {
+                setLocked('null')
+                setItems((prev) => {
+                    if (!prev || !prev.docAvailability) return prev
+
+                    return {
+                        ...prev,
+                        docAvailability: prev.docAvailability.map((item) =>
+                            item._id.toString() === selected?._id?.toString()
+                                ? {
+                                      ...item,
+                                      lockedAt: null,
+                                  }
+                                : item,
+                        ),
+                    }
+                })
+                removeLocal('token')
+                dispatch(openToast({ message: response.message, type: 'success' }))
+            } else {
+                dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
+            }
+        } catch (error) {
+            console.error('error: ', error)
+            dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
+        }
     }
 
     return (
@@ -79,13 +160,18 @@ const SlotBooking = () => {
                             {!isEmpty(items?.docAvailability) &&
                                 items?.docAvailability.map((s) => {
                                     const isLocked = locked === s._id
+                                    const isTenMinLocked = (!isEmpty(s?.lockedAt) && moment().diff(moment(s?.lockedAt), 'minutes') < 10) || false
+                                    console.log('isTenMinLocked: ', isTenMinLocked)
+                                    const countdownEnd = moment(s?.lockedAt).add(10, 'minutes').toDate()
                                     return (
                                         <button
                                             key={s._id}
                                             onClick={() => handleLock(s)}
                                             disabled={s.isLocked}
                                             className={`text-left p-2 border rounded-md transition-colors duration-200 ${
-                                                isLocked || s.isLocked ? 'bg-emerald-100 border-emerald-300' : 'bg-white hover:bg-gray-50'
+                                                isTenMinLocked || isLocked || s.isLocked
+                                                    ? 'bg-emerald-100 border-emerald-300'
+                                                    : 'bg-white hover:bg-gray-50'
                                             }`}
                                         >
                                             <div className='font-medium text-sm'>
@@ -101,7 +187,24 @@ const SlotBooking = () => {
                                                 </div>
                                             </div>
 
-                                            {isLocked && <div className='text-xs text-emerald-700 mt-1'>Locked — 5:00</div>}
+                                            {(isTenMinLocked || isLocked) && (
+                                                <div className='text-xs text-emerald-700 mt-1'>
+                                                    <Countdown
+                                                        key={s.lockedAt}
+                                                        date={countdownEnd}
+                                                        renderer={({ minutes, seconds, completed }) => {
+                                                            if (completed) {
+                                                                return <span>10:00</span>
+                                                            }
+                                                            return (
+                                                                <span>
+                                                                    {String(minutes || 10).padStart(2, '0')}:{String(seconds || 0).padStart(2, '0')}
+                                                                </span>
+                                                            )
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
                                         </button>
                                     )
                                 })}
@@ -116,7 +219,7 @@ const SlotBooking = () => {
                         >
                             Lock & Confirm
                         </button>
-                        <button onClick={() => setLocked(null)} className='px-3 py-2 border rounded-md text-sm hover:bg-gray-100'>
+                        <button onClick={() => handleReleaseLock()} className='px-3 py-2 border rounded-md text-sm hover:bg-gray-100'>
                             Release
                         </button>
                     </div>

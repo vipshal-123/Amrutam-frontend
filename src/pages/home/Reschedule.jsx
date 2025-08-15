@@ -1,17 +1,72 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { doctors } from '@/data/doctors'
+import { rescheduleBooking, singleDoctor } from '@/services/v1/user.service'
+import useFetchApi from '@/Hooks/useFetchApi'
+import isEmpty from 'is-empty'
+import { openToast } from '@/redux/slice/toastSlice'
+import { useDispatch } from 'react-redux'
 
 const Reschedule = () => {
-    const { apptId } = useParams()
-    const doc = doctors[0]
+    const dispatch = useDispatch()
+    const { apptId, docId } = useParams()
     const [newSlot, setNewSlot] = useState(null)
     const [rescheduled, setRescheduled] = useState(false)
-    const slots = ['2025-08-20T09:00:00', '2025-08-21T11:00:00', '2025-08-22T14:00:00']
 
-    const handleConfirmReschedule = () => {
+    const memoId = useMemo(() => ({ id: docId }), [docId])
+    const { items, setItems } = useFetchApi(singleDoctor, { requiresId: true, params: memoId })
+
+    const handleConfirmReschedule = async () => {
         if (newSlot) {
             setRescheduled(true)
+        }
+
+        try {
+            const payload = {
+                slotId: apptId,
+                newSlot: newSlot?._id,
+            }
+
+            const response = await rescheduleBooking(payload)
+
+            if (response.success) {
+                setItems((prev) => {
+                    if (!prev || !prev.docAvailability) return prev
+
+                    return {
+                        ...prev,
+                        docAvailability: prev.docAvailability.map((item) =>
+                            item._id.toString() === newSlot?._id?.toString()
+                                ? {
+                                      ...item,
+                                      isLocked: true,
+                                  }
+                                : item,
+                        ),
+                    }
+                })
+                setItems((prev) => {
+                    if (!prev || !prev.docAvailability) return prev
+
+                    return {
+                        ...prev,
+                        docAvailability: prev.docAvailability.map((item) =>
+                            item._id.toString() === apptId?.toString()
+                                ? {
+                                      ...item,
+                                      isLocked: false,
+                                  }
+                                : item,
+                        ),
+                    }
+                })
+
+                dispatch(openToast({ message: response.message, type: 'success' }))
+            } else {
+                dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
+            }
+        } catch (error) {
+            console.error('error: ', error)
+            dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
     }
 
@@ -29,10 +84,12 @@ const Reschedule = () => {
                             </div>
                             <h3 className='mt-4 text-xl font-semibold text-gray-800'>Appointment Rescheduled!</h3>
                             <p className='mt-2 text-sm text-gray-600'>
-                                Your appointment with <strong>{doc.name}</strong> has been successfully moved to <br />
+                                Your appointment with <strong>{items.name}</strong> has been successfully moved to <br />
                                 <strong>{new Date(newSlot).toLocaleString()}</strong>.
                             </p>
-                            <button className='mt-6 px-4 py-2 bg-emerald-600 text-white rounded-md'>Back to Appointments</button>
+                            <button onClick={() => setRescheduled(false)} className='mt-6 px-4 py-2 bg-emerald-600 text-white rounded-md'>
+                                Back to Appointments
+                            </button>
                         </div>
                     ) : (
                         <>
@@ -41,31 +98,42 @@ const Reschedule = () => {
                                     <strong>Appointment ID:</strong> <span className='font-mono text-gray-600'>{apptId}</span>
                                 </div>
                                 <div>
-                                    <strong>Doctor:</strong> <span className='text-gray-800'>{doc.name}</span>
+                                    <strong>Doctor:</strong> <span className='text-gray-800'>{items.name}</span>
                                 </div>
                             </div>
 
                             <div className='mt-6'>
                                 <h4 className='font-medium text-gray-800'>Choose a new slot</h4>
                                 <div className='mt-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3'>
-                                    {slots.map((s) => (
-                                        <button
-                                            onClick={() => setNewSlot(s)}
-                                            key={s}
-                                            className={`p-3 border rounded-md text-left transition-all duration-200 ${
-                                                newSlot === s
-                                                    ? 'bg-emerald-100 border-emerald-400 ring-2 ring-emerald-200'
-                                                    : 'bg-white hover:bg-gray-50'
-                                            }`}
-                                        >
-                                            <div className='font-semibold text-sm'>
-                                                {new Date(s).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
-                                            </div>
-                                            <div className='text-xs text-gray-600'>
-                                                {new Date(s).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
-                                            </div>
-                                        </button>
-                                    ))}
+                                    {!isEmpty(items?.docAvailability) &&
+                                        items?.docAvailability.map((s) => (
+                                            <button
+                                                onClick={() => setNewSlot(s)}
+                                                key={s.slotId}
+                                                className={`p-3 border rounded-md text-left transition-all duration-200 ${
+                                                    newSlot === s || s.isLocked
+                                                        ? 'bg-emerald-100 border-emerald-400 ring-2 ring-emerald-200'
+                                                        : 'bg-white hover:bg-gray-50'
+                                                }`}
+                                            >
+                                                <div className='font-semibold text-sm'>
+                                                    {new Date(s.date).toLocaleDateString(undefined, {
+                                                        weekday: 'short',
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                    })}
+                                                </div>
+                                                <div className='flex items-center gap-2'>
+                                                    <div className='text-xs text-gray-600'>
+                                                        {new Date(s.start).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+                                                    </div>
+                                                    {'-'}
+                                                    <div className='text-xs text-gray-600'>
+                                                        {new Date(s.end).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        ))}
                                 </div>
 
                                 <div className='mt-6 pt-4 border-t flex flex-col sm:flex-row items-center gap-3'>

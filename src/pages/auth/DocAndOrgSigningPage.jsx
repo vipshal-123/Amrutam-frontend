@@ -6,6 +6,7 @@ import { setLocal } from '@/utils/storage'
 import { orgAdminSigninSendOtp } from '@/services/auth/organization.service'
 import { fetchUserData } from '@/redux/slice/authSlice'
 import { useDispatch } from 'react-redux'
+import { openToast } from '@/redux/slice/toastSlice'
 
 const DocAndOrgSigningPage = () => {
     const [activeTab, setActiveTab] = useState('doctor')
@@ -21,9 +22,13 @@ const DocAndOrgSigningPage = () => {
                 setLocal('access_token', response?.accessToken)
                 dispatch(fetchUserData())
                 navigate('/doctor')
+                dispatch(openToast({ message: response.message, type: 'success' }))
+            } else {
+                dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
             console.error('error: ', error)
+            dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
     }
 
@@ -34,9 +39,13 @@ const DocAndOrgSigningPage = () => {
             if (response.success) {
                 setLocal('token', response?.token)
                 navigate('/admin-verify-otp')
+                dispatch(openToast({ message: response.message, type: 'success' }))
+            } else {
+                dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
             console.error('error: ', error)
+            dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
     }
 

@@ -3,6 +3,8 @@ import { useFormik } from 'formik'
 import { useNavigate } from 'react-router-dom'
 import { createOrgSendOtp } from '@/services/auth/organization.service'
 import { setLocal } from '@/utils/storage'
+import { openToast } from '@/redux/slice/toastSlice'
+import { useDispatch } from 'react-redux'
 
 const initialValues = {
     name: '',
@@ -20,6 +22,8 @@ const initialValues = {
 
 const Organization = () => {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+
     const types = ['Hospital', 'Clinic', 'Wellness Center', 'Other']
 
     const handleSubmit = async (values) => {
@@ -35,9 +39,13 @@ const Organization = () => {
                 setLocal('orgData', JSON.stringify(values))
                 setLocal('token', response?.token || '')
                 navigate('/create-org/verify-otp')
+                dispatch(openToast({ message: response.message, type: 'success' }))
+            } else {
+                dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
             console.error('error: ', error)
+            dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
     }
 

@@ -1,10 +1,13 @@
 import OtpInput from '@/components/OtpInput'
+import { openToast } from '@/redux/slice/toastSlice'
 import { resendOtp, verifyOtp } from '@/services/auth/user.service'
 import { getLocal, removeLocal } from '@/utils/storage'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 const OtpVerification = () => {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const handleVerifyOtp = async (otp) => {
         console.log('Entered OTP:', otp)
@@ -20,9 +23,13 @@ const OtpVerification = () => {
             if (response.success) {
                 removeLocal('token')
                 navigate('/create-password')
+                dispatch(openToast({ message: response.message, type: 'success' }))
+            } else {
+                dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
             console.error('error: ', error)
+            dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
     }
 
@@ -37,10 +44,13 @@ const OtpVerification = () => {
 
             const response = await resendOtp(payload)
             if (response.success) {
-                console.log(response.message)
+                dispatch(openToast({ message: response.message, type: 'success' }))
+            } else {
+                dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
             console.error('error: ', error)
+            dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
     }
 

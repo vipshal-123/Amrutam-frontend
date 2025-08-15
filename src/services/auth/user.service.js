@@ -69,3 +69,17 @@ export const signin = async (data) => {
         return handleResponse(error, 'error')
     }
 }
+
+export const googleAuthenticate = async (data) => {
+    try {
+        const response = await axios({
+            url: '/auth/user/signin-with-google',
+            method: 'POST',
+            data,
+        })
+
+        return handleResponse(response, 'success')
+    } catch (error) {
+        return handleResponse(error, 'error')
+    }
+}

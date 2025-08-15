@@ -1,5 +1,6 @@
 import OtpInput from '@/components/OtpInput'
 import { fetchUserData } from '@/redux/slice/authSlice'
+import { openToast } from '@/redux/slice/toastSlice'
 import { orgAdminSigninVerifyOtp, orgResendOtp } from '@/services/auth/organization.service'
 import { getLocal, removeLocal, setLocal } from '@/utils/storage'
 import React from 'react'
@@ -26,9 +27,13 @@ const OrgAdminOtpVerification = () => {
                 removeLocal('token')
                 setLocal('access_token', response?.accessToken || '')
                 navigate('/manage-doctors')
+                dispatch(openToast({ message: response.message, type: 'success' }))
+            } else {
+                dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
             console.error('error: ', error)
+            dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
     }
 
@@ -44,10 +49,13 @@ const OrgAdminOtpVerification = () => {
             const response = await orgResendOtp(payload)
 
             if (response.success) {
-                console.log(response.message)
+                dispatch(openToast({ message: response.message, type: 'success' }))
+            } else {
+                dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
             console.error('error: ', error)
+            dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
     }
 

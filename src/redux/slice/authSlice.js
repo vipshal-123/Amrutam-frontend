@@ -7,11 +7,11 @@ export const fetchUserData = createAsyncThunk('auth/fetchUserData', async () => 
         if (response.data) {
             return { isAuth: true, ...response.data }
         } else {
-            return { isAuth: false, id: '', role: '', organizationId: '' }
+            return { isAuth: false, id: '', role: '', organizationId: '', email: '' }
         }
     } catch (error) {
         console.error('error: ', error)
-        return { isAuth: false, id: '', role: '', organizationId: '' }
+        return { isAuth: false, id: '', role: '', organizationId: '', email: '' }
     }
 })
 
@@ -21,6 +21,7 @@ const initialState = {
     userId: '',
     role: '',
     organizationId: '',
+    email: '',
 }
 
 const authSlice = createSlice({
@@ -32,12 +33,14 @@ const authSlice = createSlice({
             state.userId = payload.userId
             state.role = payload.role
             state.organizationId = payload.organizationId
+            state.email = payload.email
         },
         revokeAuth: (state) => {
             state.isAuth = false
             state.userId = ''
             state.role = ''
             state.organizationId = ''
+            state.email = ''
         },
     },
     extraReducers: (builder) => {
@@ -51,6 +54,7 @@ const authSlice = createSlice({
                 state.userId = action?.payload?._id
                 state.role = action?.payload?.role
                 state.organizationId = action?.payload?.organizationId || ''
+                state.email = action?.payload?.email
             })
             .addCase(fetchUserData.rejected, (state) => {
                 state.loading = false
@@ -58,6 +62,7 @@ const authSlice = createSlice({
                 state.userId = ''
                 state.role = ''
                 state.organizationId = ''
+                state.email = ''
             })
     },
 })

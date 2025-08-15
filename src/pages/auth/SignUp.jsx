@@ -3,9 +3,12 @@ import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { signup } from '@/services/auth/user.service'
 import { setLocal } from '@/utils/storage'
+import { useDispatch } from 'react-redux'
+import { openToast } from '@/redux/slice/toastSlice'
 
 const SignUp = () => {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const handleSubmit = async (payload) => {
         try {
@@ -14,9 +17,13 @@ const SignUp = () => {
             if (response.success) {
                 setLocal('token', response.token)
                 navigate('/verify-otp')
+                dispatch(openToast({ message: response.message, type: 'success' }))
+            } else {
+                dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
             console.error('error: ', error)
+            dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
     }
 

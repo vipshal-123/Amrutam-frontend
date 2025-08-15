@@ -7,12 +7,14 @@ import store, { persistor } from './redux/store.js'
 import UserProvider from './utils/UserProvider.jsx'
 import './styles/globals.css'
 import { PersistGate } from 'redux-persist/integration/react'
+import Toast from './components/Toast.jsx'
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
         <BrowserRouter>
             <Provider store={store}>
                 <PersistGate loading={null} persistor={persistor}>
+                    <Toast />
                     <UserProvider>
                         <App />
                     </UserProvider>

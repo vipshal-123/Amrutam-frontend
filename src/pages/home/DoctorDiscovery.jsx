@@ -1,22 +1,27 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import DoctorCard from '@/components/DoctorCard'
 import useFetchApi from '@/Hooks/useFetchApi'
-import { doctorList } from '@/services/v1/user.service'
+import { doctorList, doctorSpecialization } from '@/services/v1/user.service'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import InfiniteSelect from '@/components/InfiniteSelect'
+import isEmpty from 'is-empty'
 
 const Discovery = () => {
     const [mode, setMode] = useState('any')
-    const [special, setSpecial] = useState('all')
-
     const modes = ['any', 'online', 'in-person']
-    const { cursor, fetchData, hasMore, items, loading } = useFetchApi(doctorList, { requiresId: false })
-    const specializations = Array.from(new Set(items.map((d) => d?.specialization)))
+    const [specialization, setSpecialization] = useState('')
 
-    const filtered = items.filter((d) => {
-        if (mode !== 'any' && !d?.mode.includes(mode)) return false
-        if (special !== 'all' && d?.specialization !== special) return false
-        return true
-    })
+    const filteredMode = mode === 'any' ? '' : mode === 'in-person' ? 'in_person' : mode
+    const param = useMemo(() => ({ specFilter: specialization, type: filteredMode }), [specialization, filteredMode])
+    const isId = isEmpty(param) ? false : true
+
+    const { cursor, fetchData, hasMore, items, loading } = useFetchApi(doctorList, { requiresId: isId, params: param })
+    const data = useFetchApi(doctorSpecialization, { requiresId: false })
+
+    const handleChange = (value) => {
+        console.log('value: ', value)
+        setSpecialization(value)
+    }
 
     return (
         <div className='py-8 px-4 sm:px-6 lg:px-8 bg-gray-50 min-h-screen'>
@@ -26,14 +31,14 @@ const Discovery = () => {
             </div>
 
             <div className='bg-white p-4 rounded-lg shadow-md mb-6 flex flex-col md:flex-row gap-4 items-center'>
-                <select className='border p-2 rounded-md w-full md:w-auto' value={special} onChange={(e) => setSpecial(e.target.value)}>
-                    <option value='all'>All specializations</option>
-                    {specializations.map((s) => (
-                        <option key={s} value={s}>
-                            {s}
-                        </option>
-                    ))}
-                </select>
+                <InfiniteSelect
+                    onChange={handleChange}
+                    cursor={data.cursor}
+                    fetchMore={data.fetchData}
+                    hasMore={data.hasMore}
+                    options={data.items.map((data) => ({ value: data._id, label: data?.title }))}
+                    value={specialization}
+                />
 
                 <div className='flex flex-wrap gap-2 items-center justify-center'>
                     {modes.map((m) => (
@@ -63,8 +68,8 @@ const Discovery = () => {
                     scrollThreshold='90%'
                 >
                     <div className='grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'>
-                        {filtered.length > 0 ? (
-                            filtered.map((d, index) => <DoctorCard key={index} doctor={d} handleResendMail={null} />)
+                        {!isEmpty(items) ? (
+                            items.map((d, index) => <DoctorCard key={index} doctor={d} handleResendMail={null} />)
                         ) : (
                             <p className='text-center text-gray-500 col-span-full'>No doctors match the current filters.</p>
                         )}

@@ -105,7 +105,7 @@ const MainLayout = ({ children }) => {
             <main className='flex-1 container px-4 md:px-6 pt-16'>{children}</main>
             <footer className='bg-white border-t mt-auto'>
                 <div className='container py-6 text-sm text-gray-600 px-4 md:px-6'>
-                    © {new Date().getFullYear()} Amrutam — Ayurvedic consultations UI MVP
+                    © {new Date().getFullYear()} Amrutam — Ayurvedic consultations MVP
                 </div>
             </footer>
         </div>

@@ -1,12 +1,15 @@
 import CustomCalendar from '@/components/CustomCalendar'
 import useFetchApi from '@/Hooks/useFetchApi'
+import { openToast } from '@/redux/slice/toastSlice'
 import { doctorAvailability, getDoctorAvailability, updateDoctorAvailability } from '@/services/v1/organization.service'
 import { transformApiDataToEvents } from '@/utils/reuseableFunctions'
 import isEmpty from 'is-empty'
 import moment from 'moment'
 import React, { useState, useRef } from 'react'
+import { useDispatch } from 'react-redux'
 
 const DoctorLogin = () => {
+    const dispatch = useDispatch()
     const [events, setEvents] = useState([])
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedSlots, setSelectedSlots] = useState([])
@@ -102,9 +105,13 @@ const DoctorLogin = () => {
                 if (response.success) {
                     setEvents([...otherEvents, ...newEventsForDay])
                     console.log(response.message)
+                    dispatch(openToast({ message: response.message, type: 'success' }))
+                } else {
+                    dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
                 }
             } catch (error) {
                 console.error('error: ', error)
+                dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
             }
         } else {
             const newEvents = []
@@ -139,10 +146,14 @@ const DoctorLogin = () => {
                     if (response.success) {
                         setEvents((prevEvents) => [...prevEvents, ...newEvents])
                         console.log(response.message)
+                        dispatch(openToast({ message: response.message, type: 'success' }))
+                    } else {
+                        dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
                     }
                 }
             } catch (error) {
                 console.error('error: ', error)
+                dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
             }
         }
         closeModal()
