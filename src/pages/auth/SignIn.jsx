@@ -5,7 +5,7 @@ import { googleAuthenticate, signin } from '@/services/auth/user.service'
 import { setLocal } from '@/utils/storage'
 import { fetchUserData } from '@/redux/slice/authSlice'
 import { useDispatch } from 'react-redux'
-import { GoogleLogin, useGoogleLogin } from '@react-oauth/google'
+import { GoogleLogin } from '@react-oauth/google'
 import { openToast } from '@/redux/slice/toastSlice'
 
 const SignIn = () => {
@@ -67,11 +67,6 @@ const SignIn = () => {
         onSubmit: handleLogin,
     })
 
-    const login = useGoogleLogin({
-        onSuccess: (credentialResponse) => handleContinueWithGoogle(credentialResponse?.credential),
-        onError: () => console.log('Login Failed'),
-    })
-
     return (
         <div className='flex justify-center items-center min-h-screen bg-gray-50 px-4 py-8'>
             <div className='bg-white shadow-lg rounded-lg p-6 sm:p-8 w-full max-w-md'>
@@ -116,14 +111,14 @@ const SignIn = () => {
                     >
                         Sign In
                     </button>
-                    <button
-                        onClick={() => login()}
-                        type='button'
-                        className='w-full flex items-center justify-center gap-3 border border-gray-300 p-3 rounded-lg hover:bg-gray-50 transition-colors'
-                    >
-                        <img src='https://www.svgrepo.com/show/355037/google.svg' alt='Google' className='w-5 h-5' />
-                        <span className='text-gray-700 font-medium'>Sign up with Google</span>
-                    </button>
+                    <div style={{ width: '100%' }}>
+                        <GoogleLogin
+                            onSuccess={(credentialResponse) => handleContinueWithGoogle(credentialResponse?.credential)}
+                            onError={() => {
+                                console.log('Login Failed')
+                            }}
+                        />
+                    </div>
                 </form>
                 <p className='text-center text-sm mt-6 text-gray-600'>
                     Don't have an account?{' '}
