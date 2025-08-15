@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useFormik } from 'formik'
 import { useNavigate } from 'react-router-dom'
 import { createOrgSendOtp } from '@/services/auth/organization.service'
@@ -23,11 +23,13 @@ const initialValues = {
 const Organization = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const [loading, setLoading] = useState(false)
 
     const types = ['Hospital', 'Clinic', 'Wellness Center', 'Other']
 
     const handleSubmit = async (values) => {
         try {
+            setLoading(true)
             console.log('Form Data:', values)
             const payload = {
                 email: values.email,
@@ -36,14 +38,17 @@ const Organization = () => {
             const response = await createOrgSendOtp(payload)
 
             if (response.success) {
+                setLoading(false)
                 setLocal('orgData', JSON.stringify(values))
                 setLocal('token', response?.token || '')
                 navigate('/create-org/verify-otp')
                 dispatch(openToast({ message: response.message, type: 'success' }))
             } else {
+                setLoading(false)
                 dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
+            setLoading(false)
             console.error('error: ', error)
             dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
@@ -188,7 +193,7 @@ const Organization = () => {
 
                 <div className='flex justify-end'>
                     <button type='submit' className='bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded transition'>
-                        Create Organization
+                        {loading ? 'Loading...' : 'Create Organization'}
                     </button>
                 </div>
             </form>

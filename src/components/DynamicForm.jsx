@@ -3,7 +3,7 @@ import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import FormField from './FormField'
 
-const DynamicForm = ({ fields, onSubmit, validationSchema, infiniteData }) => {
+const DynamicForm = ({ fields, onSubmit, validationSchema, infiniteData, loading1 }) => {
     const initialValues = fields.reduce((acc, field) => {
         acc[field.name] = field.initialValue || ''
         return acc
@@ -23,7 +23,7 @@ const DynamicForm = ({ fields, onSubmit, validationSchema, infiniteData }) => {
 
             <div className='flex justify-end'>
                 <button type='submit' className='bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded transition'>
-                    Submit
+                    {loading1 ? 'Loading...' : 'Submit'}
                 </button>
             </div>
         </form>

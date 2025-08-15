@@ -7,24 +7,30 @@ import { fetchUserData } from '@/redux/slice/authSlice'
 import { useDispatch } from 'react-redux'
 import { GoogleLogin } from '@react-oauth/google'
 import { openToast } from '@/redux/slice/toastSlice'
+import { useState } from 'react'
 
 const SignIn = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const [loading, setLoading] = useState(false)
 
     const handleLogin = async (payload) => {
         try {
+            setLoading(true)
             const response = await signin(payload)
 
             if (response.success) {
+                setLoading(false)
                 dispatch(fetchUserData())
                 setLocal('access_token', response.accessToken)
                 navigate('/home')
                 dispatch(openToast({ message: response.message, type: 'success' }))
             } else {
+                setLoading(false)
                 dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
+            setLoading(false)
             console.error('error: ', error)
             dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
@@ -109,7 +115,7 @@ const SignIn = () => {
                         type='submit'
                         className='w-full bg-emerald-600 text-white p-3 rounded-lg font-semibold hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors'
                     >
-                        Sign In
+                        {loading ? 'Loading...' : 'Sign In'}
                     </button>
                     <div className='w-full flex items-center justify-center'>
                         <GoogleLogin

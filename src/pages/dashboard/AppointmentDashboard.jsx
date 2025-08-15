@@ -13,6 +13,7 @@ const Dashboard = () => {
     const [statusFilter, setStatusFilter] = useState('All')
     const [showCancelConfirm, setShowCancelConfirm] = useState(false)
     const [id, setId] = useState('')
+    const [loading1, setLoading1] = useState(false)
 
     const filter = statusFilter === 'Cancelled' ? 'cancel' : statusFilter === 'Booked' ? 'book' : ''
     const timeFilter = tab === 'past' ? 'past' : ''
@@ -31,6 +32,7 @@ const Dashboard = () => {
         if (isEmpty(id)) {
             return
         }
+        setLoading1(true)
         try {
             const payload = {
                 slotId: id,
@@ -49,12 +51,15 @@ const Dashboard = () => {
                             : data,
                     )
                 })
+                setLoading1(false)
                 setShowCancelConfirm(false)
                 dispatch(openToast({ message: response.message, type: 'success' }))
             } else {
+                setLoading1(false)
                 dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
+            setLoading1(false)
             console.error('error: ', error)
             dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
@@ -143,7 +148,7 @@ const Dashboard = () => {
                                 No, Keep it
                             </button>
                             <button onClick={handleCancelConfirmed} className='px-4 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700'>
-                                Yes, Cancel
+                                {loading1 ? 'Loading...' : 'Yes, Cancel'}
                             </button>
                         </div>
                     </div>

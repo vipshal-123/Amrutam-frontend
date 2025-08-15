@@ -22,8 +22,11 @@ const SlotBooking = () => {
     const [otpOpen, setOtpOpen] = useState(false)
     const [otp, setOtp] = useState('')
     const [bookingConfirmed, setBookingConfirmed] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [loading1, setLoading1] = useState(false)
 
     const handleLockSendOtp = async () => {
+        setLoading(true)
         try {
             const payload = {
                 email: userData?.email,
@@ -33,6 +36,7 @@ const SlotBooking = () => {
             const response = await bookingSendOtp(payload)
 
             if (response.success) {
+                setLoading(false)
                 setOtpOpen(true)
                 setLocal('token', response.token)
                 console.log(response.message)
@@ -53,9 +57,11 @@ const SlotBooking = () => {
                 })
                 dispatch(openToast({ message: response.message, type: 'success' }))
             } else {
+                setLoading(false)
                 dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
+            setLoading(false)
             console.error('error: ', error)
             dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
@@ -63,6 +69,7 @@ const SlotBooking = () => {
 
     const handleConfirmBooking = async () => {
         try {
+            setLoading1(true)
             const localToken = getLocal('token')
             const payload = {
                 otp: otp,
@@ -74,6 +81,7 @@ const SlotBooking = () => {
             const response = await bookingVerify(payload)
 
             if (response.success) {
+                setLoading1(false)
                 removeLocal('token')
                 setBookingConfirmed(true)
                 setOtpOpen(false)
@@ -95,9 +103,11 @@ const SlotBooking = () => {
                 })
                 dispatch(openToast({ message: response.message, type: 'success' }))
             } else {
+                setLoading1(false)
                 dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
+            setLoading1(false)
             console.error('error: ', error)
             dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
@@ -110,6 +120,7 @@ const SlotBooking = () => {
 
     const handleReleaseLock = async () => {
         try {
+            setLoading(true)
             const localToken = getLocal('token')
             const payload = {
                 token: localToken,
@@ -119,6 +130,7 @@ const SlotBooking = () => {
             const response = await bookingReleaseLock(payload)
 
             if (response.success) {
+                setLoading(false)
                 setLocked('null')
                 setItems((prev) => {
                     if (!prev || !prev.docAvailability) return prev
@@ -138,9 +150,11 @@ const SlotBooking = () => {
                 removeLocal('token')
                 dispatch(openToast({ message: response.message, type: 'success' }))
             } else {
+                setLoading(false)
                 dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
+            setLoading(false)
             console.error('error: ', error)
             dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
@@ -217,10 +231,10 @@ const SlotBooking = () => {
                             onClick={() => handleLockSendOtp()}
                             className='px-4 py-2 rounded-md bg-emerald-600 text-white disabled:opacity-50 transition-opacity'
                         >
-                            Lock & Confirm
+                            {loading ? 'Loading...' : 'Lock & Confirm'}
                         </button>
                         <button onClick={() => handleReleaseLock()} className='px-3 py-2 border rounded-md text-sm hover:bg-gray-100'>
-                            Release
+                            {loading1 ? 'Loading...' : 'Release'}
                         </button>
                     </div>
                 </div>
@@ -259,7 +273,7 @@ const SlotBooking = () => {
                             />
                             <div className='mt-3'>
                                 <button onClick={handleConfirmBooking} className='px-3 py-1 bg-emerald-600 text-white rounded-md text-sm'>
-                                    Confirm Booking
+                                    {loading ? 'Loading...' : 'Confirm Booking'}
                                 </button>
                                 <button onClick={() => setOtpOpen(false)} className='ml-2 px-3 py-1 border rounded-md text-sm'>
                                     Cancel

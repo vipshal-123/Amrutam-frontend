@@ -10,23 +10,29 @@ import { openToast } from '@/redux/slice/toastSlice'
 
 const DocAndOrgSigningPage = () => {
     const [activeTab, setActiveTab] = useState('doctor')
+    const [loading, setLoading] = useState(false)
+    const [loading1, setLoading1] = useState(false)
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
     const handleDocSignin = async (payload) => {
         console.log('payload: ', payload)
         try {
+            setLoading(true)
             const response = await doctorSignin(payload)
 
             if (response?.success) {
+                setLoading(false)
                 setLocal('access_token', response?.accessToken)
                 dispatch(fetchUserData())
                 navigate('/doctor')
                 dispatch(openToast({ message: response.message, type: 'success' }))
             } else {
+                setLoading(false)
                 dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
+            setLoading(false)
             console.error('error: ', error)
             dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
@@ -34,16 +40,20 @@ const DocAndOrgSigningPage = () => {
 
     const handleOrgAdminSendOtp = async (payload) => {
         try {
+            setLoading1(true)
             const response = await orgAdminSigninSendOtp(payload)
 
             if (response.success) {
+                setLoading1(false)
                 setLocal('token', response?.token)
                 navigate('/admin-verify-otp')
                 dispatch(openToast({ message: response.message, type: 'success' }))
             } else {
+                setLoading1(false)
                 dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
+            setLoading1(false)
             console.error('error: ', error)
             dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
@@ -113,7 +123,7 @@ const DocAndOrgSigningPage = () => {
                         </div>
 
                         <button type='submit' className='w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-lg'>
-                            Sign In
+                            {loading ? 'Loading...' : 'Sign In'}
                         </button>
                     </form>
                 )}
@@ -133,7 +143,7 @@ const DocAndOrgSigningPage = () => {
                         </div>
 
                         <button type='submit' className='w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-lg'>
-                            Send OTP
+                            {loading1 ? 'Loading...' : 'Send OTP'}
                         </button>
                     </form>
                 )}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
-const OtpInput = ({ length = 6, initialTimer = 30, onVerify, onResend }) => {
+const OtpInput = ({ length = 6, initialTimer = 30, onVerify, onResend, loading }) => {
     const [otp, setOtp] = useState(Array(length).fill(''))
     const [resendTimer, setResendTimer] = useState(initialTimer)
 
@@ -57,7 +57,7 @@ const OtpInput = ({ length = 6, initialTimer = 30, onVerify, onResend }) => {
             </div>
 
             <button onClick={handleVerify} className='w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded transition'>
-                Verify OTP
+                {loading ? 'Loading...' : 'Verify OTP'}
             </button>
 
             <div className='text-center mt-4 text-sm'>
@@ -65,7 +65,7 @@ const OtpInput = ({ length = 6, initialTimer = 30, onVerify, onResend }) => {
                     <span className='text-gray-500'>Resend OTP in {resendTimer}s</span>
                 ) : (
                     <button type='button' onClick={handleResend} className='text-emerald-600 hover:underline'>
-                        Resend OTP
+                        {loading ? 'Loading...' : 'Resend OTP'}
                     </button>
                 )}
             </div>
