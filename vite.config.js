@@ -8,7 +8,10 @@ export default defineConfig({
   base: '/Amrutam-frontend/',
   resolve: {
         alias: {
-            '@': path.resolve(__dirname, 'src'),
+            '@': path.resolve(__dirname, './src'),
         },
     },
+    server: {
+        port: 3000
+    }
 })
