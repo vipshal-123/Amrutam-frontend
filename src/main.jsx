@@ -13,7 +13,7 @@ import config from './config/index.js'
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
-        <BrowserRouter basename='/Amrutam-frontend'>
+        <BrowserRouter>
             <Provider store={store}>
                 <PersistGate loading={null} persistor={persistor}>
                     <Toast />

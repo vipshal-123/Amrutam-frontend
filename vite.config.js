@@ -14,7 +14,6 @@ export default defineConfig({
             },
         },
     ],
-    base: '/Amrutam-frontend/',
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './src'),
