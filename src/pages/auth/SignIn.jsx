@@ -76,7 +76,7 @@ const SignIn = () => {
     return (
         <div className='flex justify-center items-center min-h-screen bg-gray-50 px-4 pt-8'>
             <div className='bg-white shadow-lg rounded-lg p-6 sm:p-8 w-full max-w-md'>
-                <h2 className='text-2xl sm:text-3xl font-bold mb-6 text-center text-gray-800'>Sign In</h2>
+                <h2 className='text-xl sm:text-3xl font-bold mb-6 text-center text-gray-800'>Sign In</h2>
 
                 <form className='space-y-4' onSubmit={formik.handleSubmit}>
                     <div>
@@ -117,17 +117,13 @@ const SignIn = () => {
                     >
                         {loading ? 'Loading...' : 'Sign In'}
                     </button>
-                    <div className='w-full flex justify-center'>
-                        <div className='w-full max-w-sm'>
-                            <GoogleLogin
-                                onSuccess={(credentialResponse) => handleContinueWithGoogle(credentialResponse?.credential)}
-                                onError={() => {
-                                    console.log('Login Failed')
-                                }}
-                                useOneTap
-                                theme='outline'
-                            />
-                        </div>
+                    <div className='w-full flex items-center justify-center'>
+                        <GoogleLogin
+                            onSuccess={(credentialResponse) => handleContinueWithGoogle(credentialResponse?.credential)}
+                            onError={() => {
+                                console.log('Login Failed')
+                            }}
+                        />
                     </div>
                 </form>
                 <p className='text-center text-sm mt-6 text-gray-600'>
