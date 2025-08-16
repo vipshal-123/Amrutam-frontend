@@ -1,7 +1,6 @@
 import moment from 'moment'
 
 export const transformApiDataToEvents = (apiData) => {
-    console.log('apiData: ', apiData);
     return (
         apiData?.flatMap((day) =>
             day?.appointments?.map((appointment) => ({
@@ -13,4 +12,8 @@ export const transformApiDataToEvents = (apiData) => {
             })),
         ) || []
     )
+}
+
+export const reducedId = (id) => {
+    return id.toString().slice(-6).toUpperCase()
 }

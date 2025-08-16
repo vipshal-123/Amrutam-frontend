@@ -87,9 +87,9 @@ const DoctorsManagement = () => {
     }
 
     return (
-        <div className='py-4'>
+        <div className='pt-16'>
             <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6'>
-                <h1 className='text-2xl font-bold'>Doctors Management</h1>
+                <h1 className='text-xl sm:text-2xl font-bold'>Doctors Management</h1>
                 <button onClick={() => setShowModal(true)} className='px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 transition'>
                     + Add Doctor
                 </button>

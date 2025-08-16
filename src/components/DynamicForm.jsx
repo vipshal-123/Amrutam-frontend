@@ -16,7 +16,7 @@ const DynamicForm = ({ fields, onSubmit, validationSchema, infiniteData, loading
     })
 
     return (
-        <form onSubmit={formik.handleSubmit} className='bg-white p-6 rounded shadow space-y-6 max-w-3xl mx-auto'>
+        <form onSubmit={formik.handleSubmit} className='bg-white rounded space-y-6 max-w-3xl mx-auto'>
             {fields.map((field) => (
                 <FormField key={field.name} {...field} formik={formik} infiniteData={infiniteData} />
             ))}

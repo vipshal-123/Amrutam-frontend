@@ -161,7 +161,7 @@ const SlotBooking = () => {
     }
 
     return (
-        <div className='py-8 px-4 sm:px-6 lg:px-8 bg-gray-50 min-h-screen'>
+        <div className='pt-16 sm:px-6 lg:px-8 bg-gray-50 min-h-screen'>
             <div className='flex flex-col lg:flex-row gap-6'>
                 <div className='w-full lg:w-2/5 bg-white p-4 sm:p-6 rounded-lg shadow-md'>
                     <h2 className='text-xl font-semibold text-gray-800'>{doc.name}</h2>
@@ -170,58 +170,71 @@ const SlotBooking = () => {
 
                     <div className='mt-6'>
                         <h4 className='font-medium text-gray-800'>Available Slots</h4>
-                        <div className='mt-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-2'>
-                            {!isEmpty(items?.docAvailability) &&
-                                items?.docAvailability.map((s) => {
-                                    const isLocked = locked === s._id
-                                    const isTenMinLocked = (!isEmpty(s?.lockedAt) && moment().diff(moment(s?.lockedAt), 'minutes') < 10) || false
-                                    console.log('isTenMinLocked: ', isTenMinLocked)
-                                    const countdownEnd = moment(s?.lockedAt).add(10, 'minutes').toDate()
-                                    return (
-                                        <button
-                                            key={s._id}
-                                            onClick={() => handleLock(s)}
-                                            disabled={s.isLocked}
-                                            className={`text-left p-2 border rounded-md transition-colors duration-200 ${
-                                                isTenMinLocked || isLocked || s.isLocked
-                                                    ? 'bg-emerald-100 border-emerald-300'
-                                                    : 'bg-white hover:bg-gray-50'
-                                            }`}
-                                        >
-                                            <div className='font-medium text-sm'>
-                                                {new Date(s.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
-                                            </div>
-                                            <div className='flex items-center gap-2'>
-                                                <div className='text-xs'>
-                                                    {new Date(s.start).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
-                                                </div>
-                                                {'-'}
-                                                <div className='text-xs'>
-                                                    {new Date(s.end).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
-                                                </div>
-                                            </div>
 
-                                            {(isTenMinLocked || isLocked) && (
-                                                <div className='text-xs text-emerald-700 mt-1'>
-                                                    <Countdown
-                                                        key={s.lockedAt}
-                                                        date={countdownEnd}
-                                                        renderer={({ minutes, seconds, completed }) => {
-                                                            if (completed) {
-                                                                return <span>10:00</span>
-                                                            }
-                                                            return (
-                                                                <span>
-                                                                    {String(minutes || 10).padStart(2, '0')}:{String(seconds || 0).padStart(2, '0')}
-                                                                </span>
-                                                            )
-                                                        }}
-                                                    />
+                        <div className='mt-3 max-h-64 overflow-y-auto pr-2'>
+                            <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-2'>
+                                {!isEmpty(items?.docAvailability) &&
+                                    items?.docAvailability.map((s) => {
+                                        const isLocked = locked === s._id
+                                        const isTenMinLocked = (!isEmpty(s?.lockedAt) && moment().diff(moment(s?.lockedAt), 'minutes') < 10) || false
+                                        const countdownEnd = moment(s?.lockedAt).add(10, 'minutes').toDate()
+
+                                        return (
+                                            <button
+                                                key={s._id}
+                                                onClick={() => handleLock(s)}
+                                                disabled={s.isLocked}
+                                                className={`text-left p-2 border rounded-md transition-colors duration-200 ${
+                                                    isTenMinLocked || isLocked || s.isLocked
+                                                        ? 'bg-emerald-100 border-emerald-300'
+                                                        : 'bg-white hover:bg-gray-50'
+                                                }`}
+                                            >
+                                                <div className='font-medium text-sm'>
+                                                    {new Date(s.date).toLocaleDateString(undefined, {
+                                                        weekday: 'short',
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                    })}
                                                 </div>
-                                            )}
-                                        </button>
-                                    )
-                                })}
+                                                <div className='flex items-center gap-2'>
+                                                    <div className='text-xs'>
+                                                        {new Date(s.start).toLocaleTimeString(undefined, {
+                                                            hour: '2-digit',
+                                                            minute: '2-digit',
+                                                        })}
+                                                    </div>
+                                                    {'-'}
+                                                    <div className='text-xs'>
+                                                        {new Date(s.end).toLocaleTimeString(undefined, {
+                                                            hour: '2-digit',
+                                                            minute: '2-digit',
+                                                        })}
+                                                    </div>
+                                                </div>
+
+                                                {(isTenMinLocked || isLocked) && (
+                                                    <div className='text-xs text-emerald-700 mt-1'>
+                                                        <Countdown
+                                                            key={s.lockedAt}
+                                                            date={countdownEnd}
+                                                            renderer={({ minutes, seconds, completed }) =>
+                                                                completed ? (
+                                                                    <span>10:00</span>
+                                                                ) : (
+                                                                    <span>
+                                                                        {String(minutes || 10).padStart(2, '0')}:
+                                                                        {String(seconds || 0).padStart(2, '0')}
+                                                                    </span>
+                                                                )
+                                                            }
+                                                        />
+                                                    </div>
+                                                )}
+                                            </button>
+                                        )
+                                    })}
+                            </div>
                         </div>
                     </div>
 
@@ -262,8 +275,8 @@ const SlotBooking = () => {
                     </div>
 
                     {otpOpen && (
-                        <div className='mt-6 p-4 border rounded-md bg-gray-50'>
-                            <div className='text-sm font-medium'>Mock OTP sent to +91 ******1234</div>
+                        <div className='mt-6 p-2 border rounded-md bg-gray-50'>
+                            <div className='text-sm font-medium'>OTP sent to ******@gmail.com</div>
                             <p className='text-xs text-gray-500'>Please enter the OTP to confirm.</p>
                             <input
                                 value={otp}

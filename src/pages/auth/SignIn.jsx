@@ -74,7 +74,7 @@ const SignIn = () => {
     })
 
     return (
-        <div className='flex justify-center items-center min-h-screen bg-gray-50 px-4 py-8'>
+        <div className='flex justify-center items-center min-h-screen bg-gray-50 px-4 pt-8'>
             <div className='bg-white shadow-lg rounded-lg p-6 sm:p-8 w-full max-w-md'>
                 <h2 className='text-2xl sm:text-3xl font-bold mb-6 text-center text-gray-800'>Sign In</h2>
 
