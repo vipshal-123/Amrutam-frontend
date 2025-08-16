@@ -19,6 +19,7 @@ import { ROLES } from './constants/enums'
 import ProtectedRoute from './utils/ProtectedRoute'
 import OpenRoute from './utils/OpenRoute'
 import SlotBooking from './pages/home/SlotBooking'
+import PatientList from './pages/home/PatientList'
 
 const App = () => {
     return (
@@ -48,6 +49,7 @@ const App = () => {
 
                     <Route element={<ProtectedRoute allowedRoles={[ROLES.DOCTOR]} />}>
                         <Route path='/doctor' element={<DoctorLogin />} />
+                        <Route path='/patient-list' element={<PatientList />} />
                     </Route>
 
                     <Route element={<ProtectedRoute allowedRoles={ROLES.ORG_ADMIN} />}>

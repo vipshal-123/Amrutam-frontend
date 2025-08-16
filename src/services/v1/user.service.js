@@ -150,3 +150,17 @@ export const doctorSpecialization = async (data) => {
         return handleResponse(error, 'error')
     }
 }
+
+export const getPatientList = async (data) => {
+    try {
+        const response = await axios({
+            url: '/v1/user/patient-list',
+            method: 'GET',
+            params: { next: data?.next, limit: data?.limit },
+        })
+
+        return handleResponse(response, 'success')
+    } catch (error) {
+        return handleResponse(error, 'error')
+    }
+}
