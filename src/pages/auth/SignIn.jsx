@@ -117,13 +117,17 @@ const SignIn = () => {
                     >
                         {loading ? 'Loading...' : 'Sign In'}
                     </button>
-                    <div className='w-full'>
-                        <GoogleLogin
-                            onSuccess={(credentialResponse) => handleContinueWithGoogle(credentialResponse?.credential)}
-                            onError={() => {
-                                console.log('Login Failed')
-                            }}
-                        />
+                    <div className='w-full flex justify-center'>
+                        <div className='w-full max-w-sm'>
+                            <GoogleLogin
+                                onSuccess={(credentialResponse) => handleContinueWithGoogle(credentialResponse?.credential)}
+                                onError={() => {
+                                    console.log('Login Failed')
+                                }}
+                                useOneTap
+                                theme='outline'
+                            />
+                        </div>
                     </div>
                 </form>
                 <p className='text-center text-sm mt-6 text-gray-600'>

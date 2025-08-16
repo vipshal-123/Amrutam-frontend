@@ -119,13 +119,17 @@ const SignUp = () => {
                         {loading ? 'Loading...' : 'Sign Up'}
                     </button>
 
-                    <div className='w-full'>
-                        <GoogleLogin
-                            onSuccess={(credentialResponse) => handleContinueWithGoogle(credentialResponse?.credential)}
-                            onError={() => {
-                                console.log('Login Failed')
-                            }}
-                        />
+                    <div className='w-full flex justify-center'>
+                        <div className='w-full max-w-sm'>
+                            <GoogleLogin
+                                onSuccess={(credentialResponse) => handleContinueWithGoogle(credentialResponse?.credential)}
+                                onError={() => {
+                                    console.log('Login Failed')
+                                }}
+                                useOneTap
+                                theme='outline'
+                            />
+                        </div>
                     </div>
                 </form>
 
