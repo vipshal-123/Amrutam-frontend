@@ -58,6 +58,28 @@ const MainLayout = ({ children }) => {
                             </>
                         )}
 
+                        {userData?.role === ROLES.DOCTOR && (
+                            <nav className='space-y-2'>
+                                <div className='flex gap-3'>
+                                    <Link
+                                        to='/patient-list'
+                                        className='block text-base font-medium text-gray-700 hover:text-emerald-700 transition'
+                                        onClick={() => setMenuOpen(false)}
+                                    >
+                                        Patient List
+                                    </Link>
+
+                                    <Link
+                                        to='/doctor'
+                                        className='block text-base font-medium text-gray-700 hover:text-emerald-700 transition'
+                                        onClick={() => setMenuOpen(false)}
+                                    >
+                                        Calendar
+                                    </Link>
+                                </div>
+                            </nav>
+                        )}
+
                         {userData?.isAuth && (
                             <button
                                 onClick={() => handleLogout()}
@@ -88,6 +110,26 @@ const MainLayout = ({ children }) => {
                                     onClick={() => setMenuOpen(false)}
                                 >
                                     Appointments
+                                </Link>
+                            </nav>
+                        )}
+
+                        {userData?.role === ROLES.DOCTOR && (
+                            <nav className='space-y-2'>
+                                <Link
+                                    to='/patient-list'
+                                    className='block text-base font-medium text-gray-700 hover:text-emerald-700 transition'
+                                    onClick={() => setMenuOpen(false)}
+                                >
+                                    Patient List
+                                </Link>
+
+                                <Link
+                                    to='/doctor'
+                                    className='block text-base font-medium text-gray-700 hover:text-emerald-700 transition'
+                                    onClick={() => setMenuOpen(false)}
+                                >
+                                    Calendar
                                 </Link>
                             </nav>
                         )}
