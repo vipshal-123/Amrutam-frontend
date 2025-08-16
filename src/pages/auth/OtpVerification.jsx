@@ -10,6 +10,7 @@ const OtpVerification = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false)
+    const [loading1, setLoading1] = useState(false)
 
     const handleVerifyOtp = async (otp) => {
         console.log('Entered OTP:', otp)
@@ -42,7 +43,7 @@ const OtpVerification = () => {
     const handleResendOtp = async () => {
         console.log('Resend OTP triggered')
         try {
-            setLoading(true)
+            setLoading1(true)
             const localToken = getLocal('token')
 
             const payload = {
@@ -51,14 +52,14 @@ const OtpVerification = () => {
 
             const response = await resendOtp(payload)
             if (response.success) {
-                setLoading(false)
+                setLoading1(false)
                 dispatch(openToast({ message: response.message, type: 'success' }))
             } else {
-                setLoading(false)
+                setLoading1(false)
                 dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
-            setLoading(false)
+            setLoading1(false)
             console.error('error: ', error)
             dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
@@ -66,7 +67,7 @@ const OtpVerification = () => {
 
     return (
         <div className='min-h-screen flex items-center justify-center bg-gray-50 px-4'>
-            <OtpInput length={6} initialTimer={30} onVerify={handleVerifyOtp} onResend={handleResendOtp} loading={loading} />
+            <OtpInput length={6} initialTimer={120} onVerify={handleVerifyOtp} onResend={handleResendOtp} loading={loading} loading1={loading1} />
         </div>
     )
 }

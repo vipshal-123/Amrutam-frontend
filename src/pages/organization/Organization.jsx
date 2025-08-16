@@ -60,7 +60,7 @@ const Organization = () => {
     })
 
     return (
-        <div className='py-8 px-4 sm:px-6 lg:px-8'>
+        <div className='pt-16 sm:px-6 lg:px-8'>
             <h1 className='text-2xl font-bold mb-6 space-y-6 max-w-3xl mx-auto'>Create Organization</h1>
 
             <form onSubmit={formik.handleSubmit} className='bg-white p-6 rounded shadow space-y-6 max-w-3xl mx-auto'>

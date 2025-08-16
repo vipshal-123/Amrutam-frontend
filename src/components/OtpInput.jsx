@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
-const OtpInput = ({ length = 6, initialTimer = 30, onVerify, onResend, loading }) => {
+const OtpInput = ({ length = 6, initialTimer = 120, onVerify, onResend, loading, loading1 }) => {
     const [otp, setOtp] = useState(Array(length).fill(''))
     const [resendTimer, setResendTimer] = useState(initialTimer)
 
@@ -42,7 +42,7 @@ const OtpInput = ({ length = 6, initialTimer = 30, onVerify, onResend, loading }
             <h1 className='text-2xl font-bold text-center text-emerald-700 mb-2'>OTP Verification</h1>
             <p className='text-center text-gray-600 mb-6'>Please enter the {length}-digit code sent to your email.</p>
 
-            <div className='flex justify-between gap-2 mb-6'>
+            <div className='flex justify-center gap-2 mb-6'>
                 {otp.map((digit, idx) => (
                     <input
                         key={idx}
@@ -51,7 +51,7 @@ const OtpInput = ({ length = 6, initialTimer = 30, onVerify, onResend, loading }
                         maxLength='1'
                         value={digit}
                         onChange={(e) => handleChange(e.target.value, idx)}
-                        className='w-12 h-12 text-center border rounded text-lg focus:outline-none focus:ring-2 focus:ring-emerald-500'
+                        className='w-10 h-12 text-center border rounded text-lg focus:outline-none focus:ring-2 focus:ring-emerald-500'
                     />
                 ))}
             </div>
@@ -65,7 +65,7 @@ const OtpInput = ({ length = 6, initialTimer = 30, onVerify, onResend, loading }
                     <span className='text-gray-500'>Resend OTP in {resendTimer}s</span>
                 ) : (
                     <button type='button' onClick={handleResend} className='text-emerald-600 hover:underline'>
-                        {loading ? 'Loading...' : 'Resend OTP'}
+                        {loading1 ? 'Loading...' : 'Resend OTP'}
                     </button>
                 )}
             </div>

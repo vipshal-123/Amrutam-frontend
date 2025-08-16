@@ -165,15 +165,6 @@ const DoctorLogin = () => {
         closeModal()
     }
 
-    const handleDelete = () => {
-        if (editingEvent) {
-            const eventDay = formatDate(editingEvent.start)
-            const remainingEvents = events.filter((e) => formatDate(e.start) !== eventDay)
-            setEvents(remainingEvents)
-            closeModal()
-        }
-    }
-
     const closeModal = () => {
         setIsModalOpen(false)
         setSelectedSlots([])
@@ -184,13 +175,13 @@ const DoctorLogin = () => {
     const buttonText = editingEvent ? 'Update' : 'Save'
 
     return (
-        <div className='py-8 px-4 sm:px-6 lg:px-8 bg-gray-50 min-h-screen'>
+        <div className='pt-16 sm:px-6 lg:px-8 bg-gray-50 min-h-screen'>
             <div className='max-w-6xl mx-auto'>
                 <h1 className='text-2xl sm:text-3xl font-bold mb-4 text-gray-800'>Doctor Calendar</h1>
                 <p className='text-sm text-gray-600 mb-4'>
                     Click any date to edit or delete all slots for that day. Drag on empty slots to add new availability.
                 </p>
-                <div className='bg-white p-4 rounded-lg shadow-md'>
+                <div className='bg-white rounded-lg shadow-md'>
                     <CustomCalendar
                         events={events}
                         onSelectSlot={handleSelectSlot}
@@ -203,9 +194,9 @@ const DoctorLogin = () => {
 
             {isModalOpen && (
                 <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4'>
-                    <div className='bg-white rounded-lg shadow-xl p-6 w-full max-w-lg'>
+                    <div className='bg-white rounded-lg shadow-xl p-6 w-full max-w-sm'>
                         {' '}
-                        <h3 className='text-xl font-semibold mb-4 text-gray-800'>{editingEvent ? 'Edit Availability' : 'Mark Availability'}</h3>
+                        <h3 className='text-lg font-semibold mb-4 text-gray-800'>{editingEvent ? 'Edit Availability' : 'Mark Availability'}</h3>
                         <p className='text-sm text-gray-600 mb-4'>
                             For date(s):{' '}
                             <strong>
@@ -228,38 +219,29 @@ const DoctorLogin = () => {
                         </p>
                         <div className='space-y-3 max-h-60 overflow-y-auto pr-2'>
                             {timeSlots.map((slot, index) => (
-                                <div key={index} className='grid grid-cols-1 md:grid-cols-4 items-center gap-2'>
+                                <div key={index} className='flex items-center gap-2 flex-wrap md:flex-nowrap'>
                                     <input
                                         type='time'
                                         value={slot.start}
                                         onChange={(e) => handleTimeSlotChange(index, 'start', e.target.value)}
-                                        className='w-full p-2 border rounded-md'
+                                        className='p-1 text-xs sm:p-2 sm:w-25 sm:text-lg border rounded-md'
                                     />
                                     <span className='text-center'>to</span>
                                     <input
                                         type='time'
                                         value={slot.end}
                                         onChange={(e) => handleTimeSlotChange(index, 'end', e.target.value)}
-                                        className='w-full p-2 border rounded-md'
+                                        className='p-1 text-xs sm:p-2 sm:w-25 sm:text-lg border rounded-md'
                                     />
-                                    <div className='flex items-center gap-2'>
-                                        {/* <input
-                                            type='number'
-                                            placeholder='Count'
-                                            value={slot.patientCount}
-                                            onChange={(e) => handleTimeSlotChange(index, 'patientCount', e.target.value)}
-                                            className='w-full p-2 border rounded-md'
-                                        /> */}
-                                        <button onClick={() => removeTimeSlot(index)} className='p-2 text-red-500 hover:bg-red-100 rounded-full'>
-                                            <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'>
-                                                <path
-                                                    fillRule='evenodd'
-                                                    d='M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z'
-                                                    clipRule='evenodd'
-                                                />
-                                            </svg>
-                                        </button>
-                                    </div>
+                                    <button onClick={() => removeTimeSlot(index)} className='p-2 text-red-500 hover:bg-red-100 rounded-full'>
+                                        <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'>
+                                            <path
+                                                fillRule='evenodd'
+                                                d='M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z'
+                                                clipRule='evenodd'
+                                            />
+                                        </svg>
+                                    </button>
                                 </div>
                             ))}
                         </div>
@@ -267,14 +249,6 @@ const DoctorLogin = () => {
                             + Add another time slot
                         </button>
                         <div className='mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3'>
-                            {editingEvent && (
-                                <button
-                                    onClick={handleDelete}
-                                    className='w-full sm:w-auto px-4 py-2 bg-red-600 text-white rounded-md font-semibold hover:bg-red-700 mr-auto'
-                                >
-                                    Delete All For This Day
-                                </button>
-                            )}
                             <button onClick={closeModal} className='w-full sm:w-auto px-4 py-2 border rounded-md font-medium'>
                                 Cancel
                             </button>

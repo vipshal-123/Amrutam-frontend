@@ -9,6 +9,7 @@ const InfiniteSelect = ({ name, onChange, fetchMore, cursor, options, hasMore, p
 
     return (
         <div className='relative w-full md:w-auto'>
+            <label className='block text-sm font-medium text-gray-700 mb-1 capitalize'>{name}</label>
             <select name={name} value={value || ''} onChange={(e) => onChange(e.target.value)} style={{ display: 'none' }}>
                 <option value=''>{placeholder}</option>
                 {options.map((opt) => (

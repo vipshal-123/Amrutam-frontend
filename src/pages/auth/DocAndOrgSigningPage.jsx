@@ -16,25 +16,22 @@ const DocAndOrgSigningPage = () => {
     const dispatch = useDispatch()
 
     const handleDocSignin = async (payload) => {
-        console.log('payload: ', payload)
         try {
             setLoading(true)
             const response = await doctorSignin(payload)
-
             if (response?.success) {
-                setLoading(false)
                 setLocal('access_token', response?.accessToken)
                 dispatch(fetchUserData())
                 navigate('/doctor')
                 dispatch(openToast({ message: response.message, type: 'success' }))
             } else {
-                setLoading(false)
                 dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
-            setLoading(false)
             console.error('error: ', error)
             dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -42,53 +39,50 @@ const DocAndOrgSigningPage = () => {
         try {
             setLoading1(true)
             const response = await orgAdminSigninSendOtp(payload)
-
             if (response.success) {
-                setLoading1(false)
                 setLocal('token', response?.token)
                 navigate('/admin-verify-otp')
                 dispatch(openToast({ message: response.message, type: 'success' }))
             } else {
-                setLoading1(false)
                 dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
-            setLoading1(false)
             console.error('error: ', error)
             dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
+        } finally {
+            setLoading1(false)
         }
     }
 
     const doctorFormik = useFormik({
-        initialValues: {
-            email: '',
-            password: '',
-        },
+        initialValues: { email: '', password: '' },
         onSubmit: handleDocSignin,
     })
 
     const orgFormik = useFormik({
-        initialValues: {
-            email: '',
-        },
+        initialValues: { email: '' },
         onSubmit: handleOrgAdminSendOtp,
     })
 
     return (
-        <div className='flex justify-center items-center min-h-screen bg-gray-100 px-4'>
-            <div className='bg-white rounded-xl shadow-lg p-6 w-full max-w-md'>
-                <div className='flex border-b mb-4'>
+        <div className='flex justify-center items-center min-h-screen bg-gradient-to-br from-emerald-50 to-white px-4 pt-8'>
+            <div className='bg-white rounded-2xl shadow-xl p-6 w-full max-w-md sm:max-w-lg lg:max-w-xl'>
+                <div className='flex border-b mb-6 gap-x-2'>
                     <button
-                        className={`flex-1 py-2 text-center ${
-                            activeTab === 'doctor' ? 'border-b-2 border-emerald-500 text-emerald-600 font-semibold' : 'text-gray-500'
+                        className={`flex-1 py-2 text-center whitespace-nowrap text-xs sm:text-sm md:text-base transition ${
+                            activeTab === 'doctor'
+                                ? 'border-b-2 border-emerald-500 text-emerald-600 font-semibold'
+                                : 'text-gray-500 hover:text-emerald-500'
                         }`}
                         onClick={() => setActiveTab('doctor')}
                     >
                         Doctor Sign-In
                     </button>
                     <button
-                        className={`flex-1 py-2 text-center ${
-                            activeTab === 'org' ? 'border-b-2 border-emerald-500 text-emerald-600 font-semibold' : 'text-gray-500'
+                        className={`flex-1 py-2 text-center whitespace-nowrap text-xs sm:text-sm md:text-base transition ${
+                            activeTab === 'org'
+                                ? 'border-b-2 border-emerald-500 text-emerald-600 font-semibold'
+                                : 'text-gray-500 hover:text-emerald-500'
                         }`}
                         onClick={() => setActiveTab('org')}
                     >
@@ -97,7 +91,7 @@ const DocAndOrgSigningPage = () => {
                 </div>
 
                 {activeTab === 'doctor' && (
-                    <form onSubmit={doctorFormik.handleSubmit} className='space-y-4'>
+                    <form onSubmit={doctorFormik.handleSubmit} className='space-y-5'>
                         <div>
                             <label className='block text-sm font-medium text-gray-700 mb-1'>Email</label>
                             <input
@@ -107,6 +101,7 @@ const DocAndOrgSigningPage = () => {
                                 onChange={doctorFormik.handleChange}
                                 onBlur={doctorFormik.handleBlur}
                                 className='w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-400'
+                                placeholder='Enter your email'
                             />
                         </div>
 
@@ -119,17 +114,22 @@ const DocAndOrgSigningPage = () => {
                                 onChange={doctorFormik.handleChange}
                                 onBlur={doctorFormik.handleBlur}
                                 className='w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-400'
+                                placeholder='Enter your password'
                             />
                         </div>
 
-                        <button type='submit' className='w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-lg'>
-                            {loading ? 'Loading...' : 'Sign In'}
+                        <button
+                            type='submit'
+                            disabled={loading}
+                            className='w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-lg transition disabled:opacity-50'
+                        >
+                            {loading ? 'Signing In...' : 'Sign In'}
                         </button>
                     </form>
                 )}
 
                 {activeTab === 'org' && (
-                    <form onSubmit={orgFormik.handleSubmit} className='space-y-4'>
+                    <form onSubmit={orgFormik.handleSubmit} className='space-y-5'>
                         <div>
                             <label className='block text-sm font-medium text-gray-700 mb-1'>Email</label>
                             <input
@@ -139,11 +139,16 @@ const DocAndOrgSigningPage = () => {
                                 onChange={orgFormik.handleChange}
                                 onBlur={orgFormik.handleBlur}
                                 className='w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-400'
+                                placeholder='Enter your email'
                             />
                         </div>
 
-                        <button type='submit' className='w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-lg'>
-                            {loading1 ? 'Loading...' : 'Send OTP'}
+                        <button
+                            type='submit'
+                            disabled={loading1}
+                            className='w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-lg transition disabled:opacity-50'
+                        >
+                            {loading1 ? 'Sending OTP...' : 'Send OTP'}
                         </button>
                     </form>
                 )}

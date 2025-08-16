@@ -24,10 +24,9 @@ const Discovery = () => {
     }
 
     return (
-        <div className='py-8 px-4 sm:px-6 lg:px-8 bg-gray-50 min-h-screen'>
-            <div className='flex flex-col sm:flex-row items-center justify-between mb-6 gap-4 sm:gap-0'>
-                <h1 className='text-2xl md:text-3xl font-bold text-gray-800'>Find Ayurvedic Doctors</h1>
-                <div className='text-sm text-gray-600'>Sort: Soonest availability</div>
+        <div className='pt-16 sm:px-6 lg:px-8 bg-gray-50 min-h-screen'>
+            <div className='flex flex-col sm:flex-row justify-between mb-6 gap-4 sm:gap-0'>
+                <h1 className='text-xl md:text-3xl font-bold text-gray-800'>Find Ayurvedic Doctors</h1>
             </div>
 
             <div className='bg-white p-4 rounded-lg shadow-md mb-6 flex flex-col md:flex-row gap-4 items-center'>
@@ -54,28 +53,22 @@ const Discovery = () => {
                     ))}
                 </div>
             </div>
-            <div
-                id='scrollable'
-                className='tw-h-[400px] tw-overflow-y-auto tw-p-2 tw-border tw-border-gray-200 tw-rounded-lg tw-relative'
-                style={{ maxHeight: '400px', overflowY: 'auto' }}
+
+            <InfiniteScroll
+                dataLength={items.length}
+                next={() => fetchData(cursor)}
+                hasMore={hasMore}
+                loader={loading && <div className='tw-p-2 tw-text-center tw-text-gray-500'>Loading...</div>}
+                scrollThreshold='90%'
             >
-                <InfiniteScroll
-                    dataLength={items.length}
-                    next={() => fetchData(cursor)}
-                    hasMore={hasMore}
-                    loader={loading && <div className='tw-p-2 tw-text-center tw-text-gray-500'>Loading...</div>}
-                    scrollableTarget='scrollable'
-                    scrollThreshold='90%'
-                >
-                    <div className='grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'>
-                        {!isEmpty(items) ? (
-                            items.map((d, index) => <DoctorCard key={index} doctor={d} handleResendMail={null} />)
-                        ) : (
-                            <p className='text-center text-gray-500 col-span-full'>No doctors match the current filters.</p>
-                        )}
-                    </div>
-                </InfiniteScroll>
-            </div>
+                <div className='grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'>
+                    {!isEmpty(items) ? (
+                        items.map((d, index) => <DoctorCard key={index} doctor={d} handleResendMail={null} />)
+                    ) : (
+                        <p className='text-center text-gray-500 col-span-full'>No doctors match the current filters.</p>
+                    )}
+                </div>
+            </InfiniteScroll>
         </div>
     )
 }
