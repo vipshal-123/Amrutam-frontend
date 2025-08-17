@@ -61,7 +61,7 @@ const Discovery = () => {
                 loader={loading && <div className='tw-p-2 tw-text-center tw-text-gray-500'>Loading...</div>}
                 scrollThreshold='90%'
             >
-                <div className='grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'>
+                <div className='grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
                     {!isEmpty(items) ? (
                         items.map((d, index) => <DoctorCard key={index} doctor={d} handleResendMail={null} />)
                     ) : (
