@@ -6,7 +6,6 @@ import SignUp from './pages/auth/SignUp'
 import Discovery from './pages/home/DoctorDiscovery'
 import Dashboard from './pages/dashboard/AppointmentDashboard'
 import Reschedule from './pages/home/Reschedule'
-import DoctorLogin from './pages/home/DoctorLogin'
 import CreateOrganization from './pages/organization/Organization'
 import OtpVerification from './pages/auth/OtpVerification'
 import OrgOtpVerify from './pages/organization/OrgOtpVerify'
@@ -20,6 +19,7 @@ import ProtectedRoute from './utils/ProtectedRoute'
 import OpenRoute from './utils/OpenRoute'
 import SlotBooking from './pages/home/SlotBooking'
 import PatientList from './pages/home/PatientList'
+import DoctorCalendar from './pages/home/DoctorCalendar'
 
 const App = () => {
     return (
@@ -48,7 +48,7 @@ const App = () => {
                     </Route>
 
                     <Route element={<ProtectedRoute allowedRoles={[ROLES.DOCTOR]} />}>
-                        <Route path='/doctor' element={<DoctorLogin />} />
+                        <Route path='/doctor' element={<DoctorCalendar />} />
                         <Route path='/patient-list' element={<PatientList />} />
                     </Route>
 
