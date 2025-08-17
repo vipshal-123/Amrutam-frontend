@@ -24,6 +24,10 @@ const SlotBooking = () => {
     const [bookingConfirmed, setBookingConfirmed] = useState(false)
     const [loading, setLoading] = useState(false)
     const [loading1, setLoading1] = useState(false)
+    const [isRelease, setIsRelease] = useState(true)
+
+    const buttonName =
+        !isRelease || (!isEmpty(selected?.lockedAt) && moment().diff(moment(selected?.lockedAt), 'minutes') < 10) ? 'Release' : 'Cancel'
 
     const handleLockSendOtp = async () => {
         setLoading(true)
@@ -38,6 +42,7 @@ const SlotBooking = () => {
             if (response.success) {
                 setLoading(false)
                 setOtpOpen(true)
+                setIsRelease(false)
                 setLocal('token', response.token)
                 console.log(response.message)
                 setItems((prev) => {
@@ -55,6 +60,7 @@ const SlotBooking = () => {
                         ),
                     }
                 })
+                setLocked(null)
                 dispatch(openToast({ message: response.message, type: 'success' }))
             } else {
                 setLoading(false)
@@ -118,7 +124,14 @@ const SlotBooking = () => {
         setSelected(items)
     }
 
-    const handleReleaseLock = async () => {
+    const handleReleaseLock = async (selected) => {
+        const isTenMinLocked = (!isEmpty(selected?.lockedAt) && moment().diff(moment(selected?.lockedAt), 'minutes') < 10) || false
+
+        if (!isTenMinLocked) {
+            setLocked(null)
+            return
+        }
+
         try {
             setLoading(true)
             const localToken = getLocal('token')
@@ -147,6 +160,7 @@ const SlotBooking = () => {
                         ),
                     }
                 })
+                setLocked(null)
                 removeLocal('token')
                 dispatch(openToast({ message: response.message, type: 'success' }))
             } else {
@@ -238,18 +252,20 @@ const SlotBooking = () => {
                         </div>
                     </div>
 
-                    <div className='mt-6 flex items-center gap-3'>
-                        <button
-                            disabled={!locked}
-                            onClick={() => handleLockSendOtp()}
-                            className='px-4 py-2 rounded-md bg-emerald-600 text-white disabled:opacity-50 transition-opacity'
-                        >
-                            {loading ? 'Loading...' : 'Lock & Confirm'}
-                        </button>
-                        <button onClick={() => handleReleaseLock()} className='px-3 py-2 border rounded-md text-sm hover:bg-gray-100'>
-                            {loading1 ? 'Loading...' : 'Release'}
-                        </button>
-                    </div>
+                    {!isEmpty(locked) && (
+                        <div className='mt-6 flex items-center gap-3'>
+                            <button
+                                disabled={!locked}
+                                onClick={() => handleLockSendOtp()}
+                                className='px-4 py-2 rounded-md bg-emerald-600 text-white disabled:opacity-50 transition-opacity'
+                            >
+                                {loading ? 'Loading...' : 'Lock & Confirm'}
+                            </button>
+                            <button onClick={() => handleReleaseLock(selected)} className='px-3 py-2 border rounded-md text-sm hover:bg-gray-100'>
+                                {loading1 ? 'Loading...' : buttonName}
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <div className='flex-1 bg-white p-4 sm:p-6 rounded-lg shadow-md'>

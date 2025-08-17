@@ -44,7 +44,7 @@ const App = () => {
                         <Route path='/home' element={<Discovery />} />
                         <Route path='/book/:id' element={<SlotBooking />} />
                         <Route path='/dashboard' element={<Dashboard />} />
-                        <Route path='/reschedule/:apptId/:docId' element={<Reschedule />} />
+                        <Route path='/reschedule/:apptId/:docId/:time' element={<Reschedule />} />
                     </Route>
 
                     <Route element={<ProtectedRoute allowedRoles={[ROLES.DOCTOR]} />}>

@@ -32,6 +32,7 @@ export const singleDoctor = async (params) => {
         const response = await axios({
             url: `/v1/user/doctor/${params?.params?.id}`,
             method: 'GET',
+            params: { rescheduleDate: params?.params?.time },
         })
 
         return handleResponse(response, 'success')
