@@ -65,7 +65,11 @@ const PasswordForm = ({ title = 'Create Password', onSubmit, loading }) => {
                     )}
                 </div>
 
-                <button type='submit' className='w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-4 rounded-lg font-medium transition'>
+                <button
+                    type='submit'
+                    disabled={loading}
+                    className='w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-4 rounded-lg font-medium transition'
+                >
                     {loading ? 'Loading...' : 'Set Password'}
                 </button>
             </form>

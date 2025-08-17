@@ -174,7 +174,7 @@ const Reschedule = () => {
                                 {!isEmpty(newSlot) && (
                                     <div className='mt-6 pt-4 border-t flex flex-col sm:flex-row items-center gap-3'>
                                         <button
-                                            disabled={!newSlot}
+                                            disabled={loading}
                                             onClick={handleConfirmReschedule}
                                             className='w-full sm:w-auto px-4 py-2 bg-emerald-600 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-opacity'
                                         >

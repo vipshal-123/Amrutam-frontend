@@ -24,6 +24,7 @@ const SlotBooking = () => {
     const [bookingConfirmed, setBookingConfirmed] = useState(false)
     const [loading, setLoading] = useState(false)
     const [loading1, setLoading1] = useState(false)
+    const [loading2, setLoading2] = useState(false)
     const [isRelease, setIsRelease] = useState(true)
 
     const buttonName =
@@ -75,7 +76,7 @@ const SlotBooking = () => {
 
     const handleConfirmBooking = async () => {
         try {
-            setLoading1(true)
+            setLoading2(true)
             const localToken = getLocal('token')
             const payload = {
                 otp: otp,
@@ -87,7 +88,7 @@ const SlotBooking = () => {
             const response = await bookingVerify(payload)
 
             if (response.success) {
-                setLoading1(false)
+                setLoading2(false)
                 removeLocal('token')
                 setBookingConfirmed(true)
                 setOtpOpen(false)
@@ -109,11 +110,11 @@ const SlotBooking = () => {
                 })
                 dispatch(openToast({ message: response.message, type: 'success' }))
             } else {
-                setLoading1(false)
+                setLoading2(false)
                 dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
-            setLoading1(false)
+            setLoading2(false)
             console.error('error: ', error)
             dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
@@ -138,6 +139,7 @@ const SlotBooking = () => {
             setLocked(null)
             return
         }
+        setLoading1(true)
 
         try {
             setLoading(true)
@@ -150,7 +152,7 @@ const SlotBooking = () => {
             const response = await bookingReleaseLock(payload)
 
             if (response.success) {
-                setLoading(false)
+                setLoading1(false)
                 setLocked('null')
                 setItems((prev) => {
                     if (!prev || !prev.docAvailability) return prev
@@ -171,11 +173,11 @@ const SlotBooking = () => {
                 removeLocal('token')
                 dispatch(openToast({ message: response.message, type: 'success' }))
             } else {
-                setLoading(false)
+                setLoading1(false)
                 dispatch(openToast({ message: response.message || 'Something went wrong', type: 'error' }))
             }
         } catch (error) {
-            setLoading(false)
+            setLoading1(false)
             console.error('error: ', error)
             dispatch(openToast({ message: 'Something went wrong', type: 'error' }))
         }
@@ -262,13 +264,17 @@ const SlotBooking = () => {
                     {!isEmpty(locked) && (
                         <div className='mt-6 flex items-center gap-3'>
                             <button
-                                disabled={!locked}
+                                disabled={loading}
                                 onClick={() => handleLockSendOtp()}
                                 className='px-4 py-2 rounded-md bg-emerald-600 text-white disabled:opacity-50 transition-opacity'
                             >
                                 {loading ? 'Loading...' : 'Lock & Confirm'}
                             </button>
-                            <button onClick={() => handleReleaseLock(selected)} className='px-3 py-2 border rounded-md text-sm hover:bg-gray-100'>
+                            <button
+                                disabled={loading1}
+                                onClick={() => handleReleaseLock(selected)}
+                                className='px-3 py-2 border rounded-md text-sm hover:bg-gray-100'
+                            >
                                 {loading1 ? 'Loading...' : buttonName}
                             </button>
                         </div>
@@ -308,8 +314,12 @@ const SlotBooking = () => {
                                 className='mt-3 p-2 border rounded-md w-full sm:w-48'
                             />
                             <div className='mt-3'>
-                                <button onClick={handleConfirmBooking} className='px-3 py-1 bg-emerald-600 text-white rounded-md text-sm'>
-                                    {loading ? 'Loading...' : 'Confirm Booking'}
+                                <button
+                                    disabled={loading2}
+                                    onClick={handleConfirmBooking}
+                                    className='px-3 py-1 bg-emerald-600 text-white rounded-md text-sm'
+                                >
+                                    {loading2 ? 'Loading...' : 'Confirm Booking'}
                                 </button>
                                 <button onClick={() => setOtpOpen(false)} className='ml-2 px-3 py-1 border rounded-md text-sm'>
                                     Cancel

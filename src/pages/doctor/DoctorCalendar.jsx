@@ -289,7 +289,11 @@ const DoctorCalendar = () => {
                             <button onClick={closeModal} className='w-full sm:w-auto px-4 py-2 border rounded-md font-medium'>
                                 Cancel
                             </button>
-                            <button onClick={handleSave} className='w-full sm:w-auto px-4 py-2 bg-emerald-600 text-white rounded-md font-semibold'>
+                            <button
+                                disabled={loading}
+                                onClick={handleSave}
+                                className='w-full sm:w-auto px-4 py-2 bg-emerald-600 text-white rounded-md font-semibold'
+                            >
                                 {loading ? 'Loading...' : buttonText}
                             </button>
                         </div>
