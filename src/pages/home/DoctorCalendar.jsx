@@ -8,7 +8,7 @@ import moment from 'moment'
 import React, { useState, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 
-const DoctorLogin = () => {
+const DoctorCalendar = () => {
     const dispatch = useDispatch()
     const [events, setEvents] = useState([])
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -300,4 +300,4 @@ const DoctorLogin = () => {
     )
 }
 
-export default DoctorLogin
+export default DoctorCalendar

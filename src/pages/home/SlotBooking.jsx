@@ -122,6 +122,13 @@ const SlotBooking = () => {
     const handleLock = (items) => {
         setLocked(items?._id)
         setSelected(items)
+        const isTenMinLocked = (!isEmpty(items?.lockedAt) && moment().diff(moment(items?.lockedAt), 'minutes') < 10) || false
+
+        if (isTenMinLocked) {
+            setOtpOpen(true)
+        } else {
+            setOtpOpen(false)
+        }
     }
 
     const handleReleaseLock = async (selected) => {
