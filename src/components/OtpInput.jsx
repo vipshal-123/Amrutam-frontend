@@ -56,7 +56,11 @@ const OtpInput = ({ length = 6, initialTimer = 120, onVerify, onResend, loading,
                 ))}
             </div>
 
-            <button onClick={handleVerify} className='w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded transition'>
+            <button
+                disabled={loading}
+                onClick={handleVerify}
+                className='w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded transition'
+            >
                 {loading ? 'Loading...' : 'Verify OTP'}
             </button>
 
@@ -64,7 +68,7 @@ const OtpInput = ({ length = 6, initialTimer = 120, onVerify, onResend, loading,
                 {resendTimer > 0 ? (
                     <span className='text-gray-500'>Resend OTP in {resendTimer}s</span>
                 ) : (
-                    <button type='button' onClick={handleResend} className='text-emerald-600 hover:underline'>
+                    <button disabled={loading1} type='button' onClick={handleResend} className='text-emerald-600 hover:underline'>
                         {loading1 ? 'Loading...' : 'Resend OTP'}
                     </button>
                 )}

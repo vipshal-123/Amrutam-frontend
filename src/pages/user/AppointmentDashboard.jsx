@@ -165,7 +165,11 @@ const Dashboard = () => {
                             >
                                 No, Keep it
                             </button>
-                            <button onClick={handleCancelConfirmed} className='px-4 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700'>
+                            <button
+                                disabled={loading1}
+                                onClick={handleCancelConfirmed}
+                                className='px-4 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700'
+                            >
                                 {loading1 ? 'Loading...' : 'Yes, Cancel'}
                             </button>
                         </div>

@@ -192,7 +192,7 @@ const Organization = () => {
                 </div>
 
                 <div className='flex justify-end'>
-                    <button type='submit' className='bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded transition'>
+                    <button disabled={loading} type='submit' className='bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded transition'>
                         {loading ? 'Loading...' : 'Create Organization'}
                     </button>
                 </div>

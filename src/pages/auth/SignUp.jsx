@@ -113,6 +113,7 @@ const SignUp = () => {
                     </div>
 
                     <button
+                        disabled={loading}
                         type='submit'
                         className='w-full bg-emerald-600 text-white p-3 rounded-lg font-semibold hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors'
                     >
