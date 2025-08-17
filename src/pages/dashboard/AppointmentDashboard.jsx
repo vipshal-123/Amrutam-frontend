@@ -131,7 +131,7 @@ const Dashboard = () => {
                                     {a.status === 'booked' && (
                                         <>
                                             <Link
-                                                to={`/reschedule/${a._id}/${a.doctorId}`}
+                                                to={`/reschedule/${a._id}/${a.doctorId}/${a.start}`}
                                                 className='px-2 sm:px-3 py-1 border rounded text-xs sm:text-sm'
                                             >
                                                 Reschedule

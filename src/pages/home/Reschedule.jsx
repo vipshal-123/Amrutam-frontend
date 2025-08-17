@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { rescheduleBooking, singleDoctor } from '@/services/v1/user.service'
 import useFetchApi from '@/Hooks/useFetchApi'
 import isEmpty from 'is-empty'
@@ -9,12 +9,13 @@ import { reducedId } from '@/utils/reuseableFunctions'
 
 const Reschedule = () => {
     const dispatch = useDispatch()
-    const { apptId, docId } = useParams()
+    const navigate = useNavigate()
+    const { apptId, docId, time } = useParams()
     const [newSlot, setNewSlot] = useState(null)
     const [rescheduled, setRescheduled] = useState(false)
     const [loading, setLoading] = useState(false)
 
-    const memoId = useMemo(() => ({ id: docId }), [docId])
+    const memoId = useMemo(() => ({ id: docId, time: time }), [docId, time])
     const { items, setItems } = useFetchApi(singleDoctor, { requiresId: true, params: memoId })
 
     const handleConfirmReschedule = async () => {
@@ -94,11 +95,22 @@ const Reschedule = () => {
                             <p className='mt-2 text-sm sm:text-base text-gray-600 leading-relaxed'>
                                 Your appointment with <strong className='text-gray-800'>{items.name}</strong> has been successfully moved to{' '}
                                 <br className='hidden sm:block' />
-                                <strong className='block sm:inline'>{new Date(newSlot).toLocaleString()}</strong>.
+                                <div className='flex items-center gap-2'>
+                                    <p className='text-xs font-bold'>{new Date(newSlot?.start).toLocaleString()}</p>
+                                    {'-'}
+                                    <p className='text-xs font-bold'>
+                                        {new Date(newSlot.end).toLocaleTimeString(undefined, {
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            second: '2-digit',
+                                        })}
+                                    </p>
+                                    .
+                                </div>
                             </p>
 
                             <button
-                                onClick={() => setRescheduled(false)}
+                                onClick={() => navigate('/dashboard')}
                                 className='mt-5 sm:mt-6 px-4 sm:px-6 py-2 bg-emerald-600 hover:bg-emerald-700 transition text-white rounded-md text-sm sm:text-base'
                             >
                                 Back to Appointments
@@ -159,21 +171,23 @@ const Reschedule = () => {
                                             })}
                                     </div>
                                 </div>
-                                <div className='mt-6 pt-4 border-t flex flex-col sm:flex-row items-center gap-3'>
-                                    <button
-                                        disabled={!newSlot}
-                                        onClick={handleConfirmReschedule}
-                                        className='w-full sm:w-auto px-4 py-2 bg-emerald-600 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-opacity'
-                                    >
-                                        {loading ? 'Loading...' : 'Confirm Reschedule'}
-                                    </button>
-                                    <button
-                                        onClick={() => setNewSlot(null)}
-                                        className='w-full sm:w-auto px-3 py-2 border rounded-md text-sm hover:bg-gray-100'
-                                    >
-                                        Cancel
-                                    </button>
-                                </div>
+                                {!isEmpty(newSlot) && (
+                                    <div className='mt-6 pt-4 border-t flex flex-col sm:flex-row items-center gap-3'>
+                                        <button
+                                            disabled={!newSlot}
+                                            onClick={handleConfirmReschedule}
+                                            className='w-full sm:w-auto px-4 py-2 bg-emerald-600 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-opacity'
+                                        >
+                                            {loading ? 'Loading...' : 'Confirm Reschedule'}
+                                        </button>
+                                        <button
+                                            onClick={() => setNewSlot(null)}
+                                            className='w-full sm:w-auto px-3 py-2 border rounded-md text-sm hover:bg-gray-100'
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </>
                     )}

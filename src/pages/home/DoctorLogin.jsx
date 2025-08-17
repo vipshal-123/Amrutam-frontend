@@ -2,7 +2,7 @@ import CustomCalendar from '@/components/CustomCalendar'
 import useFetchApi from '@/Hooks/useFetchApi'
 import { openToast } from '@/redux/slice/toastSlice'
 import { doctorAvailability, getDoctorAvailability, updateDoctorAvailability } from '@/services/v1/organization.service'
-import { transformApiDataToEvents } from '@/utils/reuseableFunctions'
+import { checkForDuplicateDates, transformApiDataToEvents } from '@/utils/reuseableFunctions'
 import isEmpty from 'is-empty'
 import moment from 'moment'
 import React, { useState, useRef } from 'react'
@@ -15,7 +15,7 @@ const DoctorLogin = () => {
     const [selectedSlots, setSelectedSlots] = useState([])
     const [editingEvent, setEditingEvent] = useState(null)
     const [currentDate, setCurrentDate] = useState(moment().toDate())
-    const [timeSlots, setTimeSlots] = useState([{ start: '09:00', end: '17:00', patientCount: 10 }])
+    const [timeSlots, setTimeSlots] = useState([{ start: '09:00', end: '10:00' }])
     const { items } = useFetchApi(getDoctorAvailability, { requiresId: false })
     const formattedEvents = transformApiDataToEvents(items)
     const [loading, setLoading] = useState(false)
@@ -32,7 +32,7 @@ const DoctorLogin = () => {
     }
 
     const addTimeSlot = () => {
-        setTimeSlots([...timeSlots, { start: '09:00', end: '10:00', patientCount: 5 }])
+        setTimeSlots([...timeSlots, { start: '10:00', end: '11:00' }])
     }
 
     const removeTimeSlot = (index) => {
@@ -49,7 +49,7 @@ const DoctorLogin = () => {
     const handleSelectSlot = (slotInfo) => {
         setEditingEvent(null)
         setSelectedSlots(slotInfo.slots)
-        setTimeSlots([{ start: '09:00', end: '17:00', patientCount: 10 }])
+        setTimeSlots([{ start: '09:00', end: '10:00' }])
         setIsModalOpen(true)
     }
 
@@ -64,7 +64,6 @@ const DoctorLogin = () => {
             eventsForDay.map((e) => ({
                 start: moment(e.start).format('HH:mm'),
                 end: moment(e.end).format('HH:mm'),
-                patientCount: e.patientCount || 0,
             })),
         )
 
@@ -73,7 +72,7 @@ const DoctorLogin = () => {
 
     const handleSave = async () => {
         setLoading(true)
-        if (editingEvent) {
+        if (!isEmpty(editingEvent)) {
             const eventDay = formatDate(editingEvent.start)
             const otherEvents = events.filter((e) => formatDate(e.start) !== eventDay)
 
@@ -84,17 +83,38 @@ const DoctorLogin = () => {
                 newStartDate.setHours(startHour, startMinute, 0, 0)
                 const newEndDate = moment(editingEvent.start).toDate()
                 newEndDate.setHours(endHour, endMinute, 0, 0)
+
+                const findDuplicateTime = otherEvents.find((date) => date.start === newStartDate)
+                console.log('newStartDate: ', newStartDate)
+                console.log('findDuplicateTime: ', findDuplicateTime)
+
                 if (newEndDate > newStartDate) {
                     return {
                         id: Math.random(),
                         title: 'Available',
                         start: newStartDate,
                         end: newEndDate,
-                        // patientCount: parseInt(slot.patientCount, 10) || 0,
                     }
                 }
                 return {}
             })
+
+            const dateArray = []
+
+            if (!isEmpty(newEventsForDay)) {
+                for (const date of newEventsForDay) {
+                    if (!isEmpty(date?.start)) {
+                        dateArray.push(moment(date.start).format('HH:mm'))
+                    }
+                }
+            }
+
+            const checkDuplicate = checkForDuplicateDates(dateArray)
+
+            if (checkDuplicate) {
+                setLoading(false)
+                return dispatch(openToast({ message: 'Duplicate time slot found!', type: 'error' }))
+            }
 
             try {
                 const payload = {
@@ -127,17 +147,34 @@ const DoctorLogin = () => {
                     newStartDate.setHours(startHour, startMinute, 0, 0)
                     const newEndDate = moment(date).toDate()
                     newEndDate.setHours(endHour, endMinute, 0, 0)
+
                     if (newEndDate > newStartDate) {
                         newEvents.push({
                             id: Math.random(),
                             title: 'Available',
                             start: newStartDate,
                             end: newEndDate,
-                            // patientCount: parseInt(slot.patientCount, 10) || 1,
                         })
                     }
                 })
             })
+
+            const dateArray = []
+
+            if (!isEmpty(newEvents)) {
+                for (const date of newEvents) {
+                    if (!isEmpty(date?.start)) {
+                        dateArray.push(moment(date.start).format('HH:mm'))
+                    }
+                }
+            }
+
+            const checkDuplicate = checkForDuplicateDates(dateArray)
+
+            if (checkDuplicate) {
+                setLoading(false)
+                return dispatch(openToast({ message: 'Duplicate time slot found!', type: 'error' }))
+            }
 
             try {
                 if (!isEmpty(newEvents)) {
@@ -169,7 +206,7 @@ const DoctorLogin = () => {
         setIsModalOpen(false)
         setSelectedSlots([])
         setEditingEvent(null)
-        setTimeSlots([{ start: '09:00', end: '17:00', patientCount: 10 }])
+        setTimeSlots([{ start: '09:00', end: '10:00' }])
     }
 
     const buttonText = editingEvent ? 'Update' : 'Save'
@@ -217,7 +254,7 @@ const DoctorLogin = () => {
                                       }`}
                             </strong>
                         </p>
-                        <div className='space-y-3 max-h-60 overflow-y-auto pr-2'>
+                        <div className='space-y-3 max-h-60 overflow-y-auto'>
                             {timeSlots.map((slot, index) => (
                                 <div key={index} className='flex items-center gap-2 flex-wrap md:flex-nowrap'>
                                     <input
@@ -226,14 +263,14 @@ const DoctorLogin = () => {
                                         onChange={(e) => handleTimeSlotChange(index, 'start', e.target.value)}
                                         className='p-1 text-xs sm:p-2 sm:w-25 sm:text-lg border rounded-md'
                                     />
-                                    <span className='text-center'>to</span>
+                                    <span className='text-center'>-</span>
                                     <input
                                         type='time'
                                         value={slot.end}
                                         onChange={(e) => handleTimeSlotChange(index, 'end', e.target.value)}
                                         className='p-1 text-xs sm:p-2 sm:w-25 sm:text-lg border rounded-md'
                                     />
-                                    <button onClick={() => removeTimeSlot(index)} className='p-2 text-red-500 hover:bg-red-100 rounded-full'>
+                                    <button onClick={() => removeTimeSlot(index)} className='text-red-500 hover:bg-red-100 rounded-full'>
                                         <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'>
                                             <path
                                                 fillRule='evenodd'

@@ -37,12 +37,20 @@ const Landing = () => {
                         )}
 
                         {!userData?.isAuth && (
-                            <button
-                                onClick={() => navigate('/create-org')}
-                                className='bg-green-700 text-white px-6 py-3 rounded-lg hover:bg-green-800'
-                            >
-                                Create Organization
-                            </button>
+                            <>
+                                <button
+                                    onClick={() => navigate('/signin')}
+                                    className='bg-green-700 sm:hidden text-sm sm:text-lg text-white px-4 sm:px-6 py-3 rounded-lg hover:bg-green-800'
+                                >
+                                    Signin
+                                </button>
+                                <button
+                                    onClick={() => navigate('/create-org')}
+                                    className='bg-green-700 text-sm sm:text-lg text-white px-3 sm:px-6 py-3 rounded-lg hover:bg-green-800'
+                                >
+                                    Create Organization
+                                </button>
+                            </>
                         )}
                     </div>
                 </section>
