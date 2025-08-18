@@ -142,7 +142,6 @@ const SlotBooking = () => {
         setLoading1(true)
 
         try {
-            setLoading(true)
             const localToken = getLocal('token')
             const payload = {
                 token: localToken,
@@ -152,6 +151,7 @@ const SlotBooking = () => {
             const response = await bookingReleaseLock(payload)
 
             if (response.success) {
+                setOtpOpen(false)
                 setLoading1(false)
                 setLocked('null')
                 setItems((prev) => {
@@ -208,8 +208,10 @@ const SlotBooking = () => {
                                                 onClick={() => handleLock(s)}
                                                 disabled={s.isLocked}
                                                 className={`text-left p-2 border rounded-md transition-colors duration-200 ${
-                                                    isTenMinLocked || isLocked || s.isLocked
+                                                    isTenMinLocked || isLocked
                                                         ? 'bg-emerald-100 border-emerald-300'
+                                                        : s.isLocked
+                                                        ? 'bg-zinc-300 border-zinc-600'
                                                         : 'bg-white hover:bg-gray-50'
                                                 }`}
                                             >
